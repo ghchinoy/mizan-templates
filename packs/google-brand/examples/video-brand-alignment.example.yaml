@@ -1,0 +1,23 @@
+# Example inputs for google-brand/video-brand-alignment (DOCUMENTATION ONLY).
+# This file is not imported or executed by Mizan; it shows the fields a caller
+# supplies at eval time. Multimodal assets must be gs:// URIs — the native Eval
+# Service does not accept inline bytes.
+#
+# Equivalent CLI invocation:
+#   mizan eval run --metric google-brand/video-brand-alignment \
+#     --field response=gs://example-bucket/ads/spring-sale-15s.mp4 \
+#     --field brand_guideline="Our brand voice is warm, concise, and never salesy. \
+# Always show the logo in the final 3 seconds; primary color is #1A73E8."
+
+metric: google-brand/video-brand-alignment
+fields:
+  response: gs://example-bucket/ads/spring-sale-15s.mp4   # the video under evaluation
+  brand_guideline: |
+    Our brand voice is warm, concise, and never salesy.
+    Always show the logo in the final 3 seconds.
+    Primary color is #1A73E8; avoid competitor colors.
+
+# Illustrative expected shape (a pointwise score is 1-5 with an explanation):
+expected:
+  scoreRange: [1, 5]
+  explanation: "free-text rationale from the autorater"

@@ -1,0 +1,8 @@
+# mizan-templates holds pack DATA + CI only. Keep it clean of local/tooling cruft.
+.DS_Store
+*.swp
+*~
+
+# local Mizan working state / caches (should never be committed here)
+*.db
+.cache/

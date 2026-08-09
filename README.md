@@ -106,18 +106,26 @@ See [`docs/pack-format.md`](docs/pack-format.md) for the authoritative file form
 
 ## CI / validation gate
 
-`.github/workflows/validate-packs.yml` runs on PRs that touch `packs/**` and runs
+The `validate-packs` workflow runs on PRs that touch `packs/**` and runs
 `mizan pack validate .` (structural → identity → semantic → placeholder → lint;
 all creds-free, no eval API calls). Because this repo has no Go source, the
 workflow **obtains a version-pinned `mizan` validator** via `go install`.
 
-**Two one-time repo-admin setup steps are required before the gate is active:**
+> ⚠️ **The workflow is not yet installed at `.github/workflows/`.** The token used
+> to scaffold this repo lacked GitHub `workflow` scope, so it could not create
+> files under `.github/workflows/**`. The complete workflow stub therefore lives at
+> [`ci/validate-packs.yml`](ci/validate-packs.yml); a repo admin with workflow
+> scope must move it into place. See [`ci/README.md`](ci/README.md).
 
-1. **Secret `MIZAN_RO_TOKEN`** — a read-scoped token (fine-grained PAT or GitHub
+**Three one-time setup steps are required before the gate is active:**
+
+1. **Install the workflow** — move `ci/validate-packs.yml` to
+   `.github/workflows/validate-packs.yml` (see [`ci/README.md`](ci/README.md)).
+2. **Secret `MIZAN_RO_TOKEN`** — a read-scoped token (fine-grained PAT or GitHub
    App installation token) with *contents:read* on `ghchinoy/mizan`, so CI can
    `go install` the (private) validator. Add under *Settings → Secrets and
    variables → Actions*.
-2. **Pin `MIZAN_VERSION`** in the workflow to a tagged `mizan` release. Until a
+3. **Pin `MIZAN_VERSION`** in the workflow to a tagged `mizan` release. Until a
    release is tagged, the workflow uses a `main` pseudo-version (or is left
    disabled); the pin is always explicit in the file, never hidden.
 

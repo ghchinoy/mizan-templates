@@ -1,0 +1,66 @@
+# validate-packs — PR gate for template packs in mizan-templates.
+#
+# This repo has NO Go source, so CI cannot build the validator from its own
+# checkout; it OBTAINS a version-pinned `mizan` binary via `go install` and runs
+# `mizan pack validate .` (structural -> identity -> semantic -> placeholder ->
+# lint; all creds-free, no eval API calls). Path-filtered to packs/** so README
+# and docs PRs are unaffected.
+#
+# Design rationale + alternatives (release-binary, cross-repo reusable workflow):
+#   ghchinoy/mizan -> docs/collaboration-design.md §3.7.
+#
+# ── TWO ONE-TIME SETUP STEPS BEFORE THIS GATE IS ACTIVE ──────────────────────
+#  1. Add the Actions secret MIZAN_RO_TOKEN — a read-scoped token (fine-grained
+#     PAT or GitHub App token) with contents:read on ghchinoy/mizan, so this
+#     private module can be fetched by `go install`.
+#  2. Pin MIZAN_VERSION below to a tagged mizan release once one exists. Until
+#     then it resolves a pseudo-version off main (see the install step). The pin
+#     is always explicit here — never hidden.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: validate-packs
+
+on:
+  pull_request:
+    paths:
+      - "packs/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  # STUB: no tagged mizan release exists yet. When one is tagged, set e.g. "v0.1.0".
+  # Leave as "main" to install the current tip (pseudo-version) in the meantime.
+  MIZAN_VERSION: "main"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.x"
+
+      - name: Configure private-module access
+        env:
+          MIZAN_RO_TOKEN: ${{ secrets.MIZAN_RO_TOKEN }}
+        run: |
+          if [ -z "${MIZAN_RO_TOKEN}" ]; then
+            echo "::error::MIZAN_RO_TOKEN secret is not set — see this file's header (setup step 1)."
+            exit 1
+          fi
+          git config --global \
+            url."https://x-access-token:${MIZAN_RO_TOKEN}@github.com/".insteadOf \
+            "https://github.com/"
+          go env -w GOPRIVATE=github.com/ghchinoy/*
+
+      - name: Install pinned mizan validator
+        # Note: the mizan CLI uses a pure-Go SQLite driver, so this installs
+        # cgo-free in a stock setup-go runner (no C toolchain required).
+        run: go install "github.com/ghchinoy/mizan/cmd/mizan@${MIZAN_VERSION}"
+
+      - name: Validate packs
+        run: mizan pack validate .

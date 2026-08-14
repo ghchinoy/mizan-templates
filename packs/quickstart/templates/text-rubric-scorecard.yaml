@@ -1,0 +1,35 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/text-rubric-scorecard
+    name: Text Rubric Scorecard
+    description: Score a technical answer against a multi-criterion rubric (correctness, completeness, clarity) with a per-criterion breakdown.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - text
+        - rubric
+spec:
+    kind: rubric
+    modalities:
+        - text
+    inputs:
+        - name: response
+          modality: text
+          required: true
+    metricPromptTemplate: 'Evaluate this technical answer to ''How do I speed up a slow SQL query?'': {{response}}'
+    rubricGroups:
+        clarity:
+            - The answer is clear and well-structured
+        completeness:
+            - It mentions indexing
+            - It mentions inspecting the query plan/EXPLAIN
+        correctness:
+            - The advice is technically accurate
+            - It would plausibly improve query speed
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

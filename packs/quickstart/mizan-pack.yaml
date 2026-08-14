@@ -1,0 +1,10 @@
+apiVersion: mizan.dev/v1alpha1
+kind: Pack
+metadata:
+    name: quickstart
+    version: 1.0.0
+    description: The recommended first pack to import — a runnable smoke-test of your Vertex AI project, ADC, and model setup across all four metric kinds and four modalities.
+    maintainers: [mizan-quickstart-team]
+    license: Apache-2.0
+spec:
+    requiresApiVersion: mizan.dev/v1alpha1

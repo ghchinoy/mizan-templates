@@ -1,0 +1,37 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/image-rubric-scorecard
+    name: Image Rubric Scorecard
+    description: Score a marketing image against a multi-criterion rubric (safety, brand presence, technical quality); per-criterion scoring reaches the image.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - image
+        - rubric
+        - brand-safety
+spec:
+    kind: rubric
+    modalities:
+        - image
+    inputs:
+        - name: image
+          modality: image
+          required: true
+    metricPromptTemplate: 'Assess this candidate marketing image against the criteria. Image: {{image}}'
+    rubricGroups:
+        brand_presence:
+            - A brand logo is clearly visible
+            - Uses a predominantly blue-and-white color scheme
+        safety:
+            - Contains no violent or graphic content
+            - Contains no adult or suggestive content
+        technical_quality:
+            - The image is in sharp focus
+            - The main subject is well-lit and clearly visible
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

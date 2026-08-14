@@ -1,0 +1,33 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/video-brand-alignment
+    name: Video Brand Alignment
+    description: Score how well a video ad aligns with a supplied brand guideline (tone, visual identity, messaging) on a 1-5 scale.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - advertising
+        - brand-safety
+        - video
+        - pointwise
+spec:
+    kind: pointwise
+    modalities:
+        - video
+        - text
+    inputs:
+        - name: response
+          modality: video
+          required: true
+        - name: brand_guideline
+          modality: text
+          required: true
+    metricPromptTemplate: 'You are a brand-compliance rater. Given a brand guideline and a video ad, rate how well the ad aligns with the guideline on a 1-5 scale (1 = off-brand, 5 = fully on-brand). Consider tone, visual identity (logo, colors), and messaging consistency. Brand guideline: {{brand_guideline}}  Evaluate this video: {{response}}'
+    systemInstruction: Be strict. Penalize off-brand tone even when production quality is high.
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

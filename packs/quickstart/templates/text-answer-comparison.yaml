@@ -1,0 +1,31 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/text-answer-comparison
+    name: Text Answer Comparison
+    description: Compare two candidate text answers to a question and pick the more helpful, accurate, actionable one.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - text
+        - pairwise
+spec:
+    kind: pairwise
+    modalities:
+        - text
+    inputs:
+        - name: baseline_answer
+          modality: text
+          required: true
+        - name: candidate_answer
+          modality: text
+          required: true
+    metricPromptTemplate: 'A user asked: ''How do I make my Python script run faster?'' Which answer is more helpful, accurate, and actionable? Baseline: {{baseline_answer}}  Candidate: {{candidate_answer}}'
+    candidateFieldName: candidate_answer
+    baselineFieldName: baseline_answer
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

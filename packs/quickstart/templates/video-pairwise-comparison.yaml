@@ -1,0 +1,32 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/video-pairwise-comparison
+    name: Video Pairwise Comparison
+    description: Compare two video ads end-to-end and pick the more compelling one; media pairwise via --gcs/--file.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - video
+        - pairwise
+        - advertising
+spec:
+    kind: pairwise
+    modalities:
+        - video
+    inputs:
+        - name: baseline_ad
+          modality: video
+          required: true
+        - name: candidate_ad
+          modality: video
+          required: true
+    metricPromptTemplate: 'Compare these two video ads. Which is more compelling and effective at showcasing the product? Baseline ad: {{baseline_ad}}  Candidate ad: {{candidate_ad}}'
+    candidateFieldName: candidate_ad
+    baselineFieldName: baseline_ad
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

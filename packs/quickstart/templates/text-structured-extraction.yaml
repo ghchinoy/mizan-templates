@@ -1,0 +1,52 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/text-structured-extraction
+    name: Support Ticket Triage Extraction
+    description: Extract structured triage fields (category, sentiment, priority, action items, PII flag) from a support message per a JSON schema.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - text
+        - custom-schema
+        - extraction
+spec:
+    kind: custom_schema
+    modalities:
+        - text
+    inputs:
+        - name: message
+          modality: text
+          required: true
+    metricPromptTemplate: 'Triage this customer support message into the structured schema. Message: {{message}}'
+    responseSchema:
+        properties:
+            action_items:
+                description: Concrete next steps a support agent should take to resolve the ticket
+                items:
+                    type: string
+                type: array
+            category:
+                description: 'The ticket category, one of: billing, technical, account, other'
+                type: string
+            pii_present:
+                description: true if the message contains personally identifiable information (e.g. a card or account number)
+                type: boolean
+            priority:
+                description: 'Handling priority, one of: low, medium, high'
+                type: string
+            sentiment:
+                description: 'The customer''s sentiment, one of: positive, neutral, negative'
+                type: string
+        required:
+            - category
+            - sentiment
+            - priority
+            - pii_present
+        type: object
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

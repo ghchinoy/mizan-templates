@@ -1,0 +1,49 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/audio-structured-extraction
+    name: Audio Order Extraction
+    description: Extract a structured order (items, size, modifications) from spoken audio per a JSON schema; confirms structured extraction works on real audio.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - audio
+        - custom-schema
+        - extraction
+spec:
+    kind: custom_schema
+    modalities:
+        - audio
+    inputs:
+        - name: order_audio
+          modality: audio
+          required: true
+    metricPromptTemplate: 'Extract the coffee order from this audio. Audio: {{order_audio}}'
+    responseSchema:
+        properties:
+            items:
+                description: The drink or food items ordered, in the order they were spoken
+                items:
+                    type: string
+                type: array
+            modifications:
+                description: Any modifications requested (e.g. oat milk, extra shot, decaf)
+                items:
+                    type: string
+                type: array
+            size:
+                description: The requested size, if stated (e.g. 12-ounce, small, large); null if not stated
+                type: string
+            transcript_heard:
+                description: true ONLY if you actually received and understood spoken audio; false if no audio was available to you
+                type: boolean
+        required:
+            - items
+            - transcript_heard
+        type: object
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

@@ -1,0 +1,27 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/audio-narration-clarity
+    name: Audio Narration Clarity
+    description: Rate the clarity and intelligibility of spoken-word audio narration on an explicit 1-5 scale.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - audio
+        - quality
+        - pointwise
+spec:
+    kind: pointwise
+    modalities:
+        - audio
+    inputs:
+        - name: audio
+          modality: audio
+          required: true
+    metricPromptTemplate: 'You are an audio-quality rater. Listen to this narration and rate its clarity and intelligibility on a 1-5 scale, where 1 = hard to understand (muffled, noisy, mumbled) and 5 = crystal clear, well-paced, easy to follow. Briefly justify. Audio: {{audio}}'
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

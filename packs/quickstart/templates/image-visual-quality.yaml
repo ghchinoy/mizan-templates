@@ -1,0 +1,27 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+    id: quickstart/image-visual-quality
+    name: Image Visual Quality
+    description: Score the overall visual quality of an image on an explicit 1-5 scale.
+    version: 1.0.0
+    maintainers:
+        - mizan-quickstart-team
+    license: Apache-2.0
+    tags:
+        - image
+        - quality
+        - pointwise
+spec:
+    kind: pointwise
+    modalities:
+        - image
+    inputs:
+        - name: image
+          modality: image
+          required: true
+    metricPromptTemplate: 'You are a photo-quality rater. Rate the overall visual quality of this image on a 1-5 scale, where 1 = poor (blurry, badly exposed, poorly composed) and 5 = excellent (sharp, well-exposed, well-composed). Briefly justify. Image: {{image}}'
+    autorater:
+        model: gemini-2.5-flash
+        samplingCount: 4
+        flipEnabled: true

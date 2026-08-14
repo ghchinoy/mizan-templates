@@ -32,7 +32,7 @@ permissions:
 env:
   # STUB: no tagged mizan release exists yet. When one is tagged, set e.g. "v0.1.0".
   # Leave as "main" to install the current tip (pseudo-version) in the meantime.
-  MIZAN_VERSION: "main"
+  MIZAN_VERSION: "v0.1.0"
 
 jobs:
   validate:

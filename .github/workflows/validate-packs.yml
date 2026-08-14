@@ -9,13 +9,13 @@
 # Design rationale + alternatives (release-binary, cross-repo reusable workflow):
 #   ghchinoy/mizan -> docs/collaboration-design.md §3.7.
 #
-# ── TWO ONE-TIME SETUP STEPS BEFORE THIS GATE IS ACTIVE ──────────────────────
-#  1. Add the Actions secret MIZAN_RO_TOKEN — a read-scoped token (fine-grained
+# ── SETUP (done) ──────────────────────────────────────────────────────────
+#  1. Actions secret MIZAN_RO_TOKEN is set — a read-scoped token (fine-grained
 #     PAT or GitHub App token) with contents:read on ghchinoy/mizan, so this
 #     private module can be fetched by `go install`.
-#  2. Pin MIZAN_VERSION below to a tagged mizan release once one exists. Until
-#     then it resolves a pseudo-version off main (see the install step). The pin
-#     is always explicit here — never hidden.
+#  2. MIZAN_VERSION is pinned to a tagged mizan release (v0.1.0+). Bump it here
+#     to a newer tag when mizan cuts one — the pin is always explicit, never
+#     left resolving off @main.
 # ─────────────────────────────────────────────────────────────────────────────
 
 name: validate-packs

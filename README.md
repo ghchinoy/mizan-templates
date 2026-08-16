@@ -10,21 +10,11 @@ packs** that Mizan users import from and contribute to.
 
 > This repo contains **data + CI only — no application code.** The Mizan CLI/GUI
 > and its Go source live in [`ghchinoy/mizan`](https://github.com/ghchinoy/mizan).
-> The pack file format, the `Store`/`Codec`/`SyncBackend` seam, and the full design
-> rationale are documented in that repo under `docs/collaboration-design.md`.
+> The pack file format and the full design rationale are documented in that repo
+> under `docs/collaboration-design.md`.
 
-## Why a separate repo?
-
-Template contribution and review are decoupled from the Mizan **source** repo:
-
-- **Governance / access** — a collaborator can be granted PR rights here without
-  any access to Mizan's application source.
-- **Independent cadence** — packs version and release on their own schedule.
-
-The trade-off (made explicit): this repo has no Go toolchain, so the `validate-packs`
-CI must **obtain** a pinned `mizan` binary rather than build one — see
-[`.github/workflows/validate-packs.yml`](.github/workflows/validate-packs.yml) and
-the "CI / validation gate" section below.
+Packs live here so contributors can propose templates via PR without access to
+Mizan's source.
 
 ## Repository layout
 
@@ -106,32 +96,18 @@ See [`docs/pack-format.md`](docs/pack-format.md) for the authoritative file form
 
 ## CI / validation gate
 
-The `validate-packs` workflow runs on PRs that touch `packs/**` and runs
+Every PR that touches `packs/**` is gated by the live
+[`validate-packs`](.github/workflows/validate-packs.yml) workflow. It runs
 `mizan pack validate .` (structural → identity → semantic → placeholder → lint;
-all creds-free, no eval API calls). Because this repo has no Go source, the
-workflow **obtains a version-pinned `mizan` validator** via `go install`.
+all creds-free, no eval API calls) — so README- and docs-only PRs are unaffected.
 
-> ⚠️ **The workflow is not yet installed at `.github/workflows/`.** The token used
-> to scaffold this repo lacked GitHub `workflow` scope, so it could not create
-> files under `.github/workflows/**`. The complete workflow stub therefore lives at
-> [`ci/validate-packs.yml`](ci/validate-packs.yml); a repo admin with workflow
-> scope must move it into place. See [`ci/README.md`](ci/README.md).
+Because this repo has no Go source of its own, the workflow **obtains a
+version-pinned `mizan` validator** via `go install` rather than building one. The
+version is pinned in the workflow file (`MIZAN_VERSION`, currently `v0.1.0`);
+maintainers bump the pin when Mizan cuts a newer tag.
 
-**Three one-time setup steps are required before the gate is active:**
-
-1. **Install the workflow** — move `ci/validate-packs.yml` to
-   `.github/workflows/validate-packs.yml` (see [`ci/README.md`](ci/README.md)).
-2. **Secret `MIZAN_RO_TOKEN`** — a read-scoped token (fine-grained PAT or GitHub
-   App installation token) with *contents:read* on `ghchinoy/mizan`, so CI can
-   `go install` the (private) validator. Add under *Settings → Secrets and
-   variables → Actions*.
-3. **Pin `MIZAN_VERSION`** in the workflow to a tagged `mizan` release. Until a
-   release is tagged, the workflow uses a `main` pseudo-version (or is left
-   disabled); the pin is always explicit in the file, never hidden.
-
-The alternatives (prebuilt release binary; cross-repo reusable workflow) and the
-rationale for the pinned `go install` approach are documented in
-`ghchinoy/mizan` → `docs/collaboration-design.md` §3.7.
+For the design rationale and the alternatives considered, see `ghchinoy/mizan` →
+`docs/collaboration-design.md`.
 
 ## License
 

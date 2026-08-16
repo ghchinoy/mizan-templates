@@ -2,6 +2,8 @@
 
 **Canonical, community-maintained template packs for [Mizan](https://github.com/ghchinoy/mizan).**
 
+[![validate-packs](https://github.com/ghchinoy/mizan-templates/actions/workflows/validate-packs.yml/badge.svg)](https://github.com/ghchinoy/mizan-templates/actions/workflows/validate-packs.yml)
+
 Mizan is a Go tool over the Vertex AI Gen AI Evaluation Service for creating,
 managing, sharing, and running Gemini "LLM-as-a-Judge" metric templates across all
 modalities (text, image, audio, video, music). This repository is the **shared
@@ -40,6 +42,14 @@ mizan-templates/
 A worked example pack lives at [`packs/google-brand/`](packs/google-brand/).
 
 ## Consuming packs
+
+Get the CLI first:
+
+```bash
+go install github.com/ghchinoy/mizan/cmd/mizan@v0.1.0
+```
+
+See [Mizan's Quickstart](https://github.com/ghchinoy/mizan#quickstart) for prerequisites (Go 1.26+, a GCP project with Vertex AI enabled, and application-default credentials).
 
 With the Mizan CLI installed, import from this repo (it is the **default source**):
 

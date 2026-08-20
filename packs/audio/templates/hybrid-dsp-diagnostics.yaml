@@ -1,0 +1,56 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: audio/hybrid-dsp-diagnostics
+  name: Hybrid DSP and Psychoacoustic Diagnostics
+  description: Interprets classic DSP metrics (ViSQOL, SNR, PESQ) in conjunction with listening to the actual audio recording to diagnose specific acoustic artifacts.
+  version: 1.0.0
+  maintainers:
+    - mizan-audio-team
+  license: Apache-2.0
+  tags:
+    - audio
+    - dsp
+    - visqol
+    - snr
+    - diagnostics
+    - pointwise
+spec:
+  kind: pointwise
+  modalities:
+    - audio
+    - text
+  inputs:
+    - name: audio_clip
+      modality: audio
+      required: true
+    - name: measured_visqol
+      modality: text
+      required: true
+    - name: measured_snr_db
+      modality: text
+      required: true
+    - name: codec_or_condition
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    You are a senior DSP and audio mastering diagnostic engineer.
+    You are provided with an audio file and pre-computed objective signal metrics:
+    - Audio recording: {{audio_clip}}
+    - Measured ViSQOL Score: {{measured_visqol}} (Scale 1.0 - 4.75, where 4.0+ is transparent speech quality)
+    - Measured Signal-to-Noise Ratio (SNR): {{measured_snr_db}} dB
+    - Pipeline / Codec Condition: {{codec_or_condition}}
+
+    Task: Listen to the audio and provide a diagnostic evaluation explaining the acoustic causes for the measured scores.
+    Rate the overall acoustic usability on an explicit 1-5 scale:
+    1 = Degraded / Severely Corrupted (unacceptable transmission, heavy DSP artifacting, or unintelligible speech)
+    2 = Poor (noticeable clipping, phase smearing, heavy packet loss, or high noise floor)
+    3 = Acceptable (minor compression artifacts or mild background noise; fully intelligible)
+    4 = High Quality (transparent codec behavior, high SNR, clean frequency response)
+    5 = Broadcast / Studio Pristine (flawless fidelity matching reference standard)
+
+    In your explanation, correlate the numerical ViSQOL and SNR measurements with what you hear (e.g. spectral distortion, high-frequency rolloff, clipping, quantization noise, room acoustics).
+  autorater:
+    model: gemini-2.5-flash
+    samplingCount: 4
+    flipEnabled: true

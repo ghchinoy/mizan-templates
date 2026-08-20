@@ -1,0 +1,38 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: audio/speech-clarity-pointwise
+  name: Speech Clarity and Acoustic Quality
+  description: Rate speech intelligibility, acoustic cleanliness, and background noise of an audio recording on an explicit 1-5 scale.
+  version: 1.0.0
+  maintainers:
+    - mizan-audio-team
+  license: Apache-2.0
+  tags:
+    - audio
+    - speech
+    - quality
+    - pointwise
+spec:
+  kind: pointwise
+  modalities:
+    - audio
+  inputs:
+    - name: recording
+      modality: audio
+      required: true
+  metricPromptTemplate: |
+    You are an expert audio and speech quality evaluator. Listen carefully to the audio recording: {{recording}}
+
+    Rate the recording on an explicit 1-5 scale:
+    1 = Poor / Unusable (severe distortion, heavy background noise, clipping, or muffled/unintelligible speech)
+    2 = Fair (audible artifacts, room reverberation, or noticeable background noise that distracts from comprehension)
+    3 = Good (acceptable quality, speech is clear and understandable with minor acoustic imperfections)
+    4 = Very Good (crisp speech, minimal noise floor, natural acoustic balance)
+    5 = Excellent (pristine studio-grade clarity, zero distracting noise, flawless enunciation and frequency balance)
+
+    Provide a concise justification explaining the score based on intelligibility, noise floor, and acoustic fidelity.
+  autorater:
+    model: gemini-2.5-flash
+    samplingCount: 4
+    flipEnabled: true

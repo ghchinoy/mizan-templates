@@ -1,0 +1,41 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: audio/voice-talent-rubric
+  name: Voice Talent and Narration Rubric Scorecard
+  description: Evaluates narration or voice acting audio across atomic criteria spanning articulation, pacing, acoustic cleanliness, and vocal expressiveness.
+  version: 1.0.0
+  maintainers:
+    - mizan-audio-team
+  license: Apache-2.0
+  tags:
+    - audio
+    - speech
+    - narration
+    - rubric
+spec:
+  kind: rubric
+  modalities:
+    - audio
+  inputs:
+    - name: narration_audio
+      modality: audio
+      required: true
+  metricPromptTemplate: "Evaluate this voice narration recording: {{narration_audio}}"
+  rubricGroups:
+    articulation:
+      - Words and syllables are enunciated crisply without slurring or mumbling
+      - Pronunciation is clear and phonetically standard
+    pacing:
+      - Speech tempo is steady and comfortable for listeners without sounding rushed or sluggish
+      - Pauses are placed naturally between clauses and sentences
+    acoustic_cleanliness:
+      - There is no audible background hum, room echo, or microphone clipping
+      - Plosives (p-pops), mouth clicks, and sibilance are well-controlled
+    expressiveness:
+      - The vocal tone conveys appropriate energy, warmth, and engagement
+      - Pitch variation is dynamic rather than flat or robotic
+  autorater:
+    model: gemini-2.5-flash
+    samplingCount: 4
+    flipEnabled: true

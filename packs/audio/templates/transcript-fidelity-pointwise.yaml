@@ -1,0 +1,46 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: audio/transcript-fidelity-pointwise
+  name: Audio Transcript Fidelity and Pronunciation
+  description: Evaluates whether spoken audio faithfully matches a reference transcript text, detecting dropped words, hallucinations, and mispronunciations.
+  version: 1.0.0
+  maintainers:
+    - mizan-audio-team
+  license: Apache-2.0
+  tags:
+    - audio
+    - speech
+    - transcript
+    - asr
+    - pointwise
+spec:
+  kind: pointwise
+  modalities:
+    - audio
+    - text
+  inputs:
+    - name: recording
+      modality: audio
+      required: true
+    - name: reference_transcript
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    You are an automated speech recognition (ASR) and voice quality assurance evaluator.
+    Listen carefully to the audio recording: {{recording}}
+    Compare it against the expected reference transcript:
+    "{{reference_transcript}}"
+
+    Rate the transcription fidelity and pronunciation on an explicit 1-5 scale:
+    1 = Severe failure (major omissions, wrong words spoken, hallucinated phrases, or completely unintelligible pronunciation)
+    2 = Major errors (multiple dropped words, significant substitutions, or severe phonetic errors)
+    3 = Moderate fidelity (most words correct, but noticeable hesitations, minor omitted words, or awkward mispronunciations)
+    4 = High fidelity (speech accurately matches text with only negligible cadence quirks or minor accent differences)
+    5 = Perfect fidelity (exact, word-for-word match with accurate pronunciation, correct emphasis, and natural phrasing)
+
+    In your explanation, list any specific dropped words, extra words, or mispronounced terms.
+  autorater:
+    model: gemini-2.5-flash
+    samplingCount: 4
+    flipEnabled: true

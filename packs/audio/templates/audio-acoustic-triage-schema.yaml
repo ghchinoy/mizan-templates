@@ -1,0 +1,65 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: audio/audio-acoustic-triage-schema
+  name: Structured Audio and Acoustic Triage
+  description: Extracts structured acoustic properties, speaker count, background noise profile, and quality triage from an audio file per a strict JSON schema.
+  version: 1.0.0
+  maintainers:
+    - mizan-audio-team
+  license: Apache-2.0
+  tags:
+    - audio
+    - acoustic
+    - triage
+    - custom-schema
+spec:
+  kind: custom_schema
+  modalities:
+    - audio
+  inputs:
+    - name: audio_file
+      modality: audio
+      required: true
+  metricPromptTemplate: "Analyze the acoustic environment, speaker characteristics, and sound quality of this audio recording: {{audio_file}}"
+  responseSchema:
+    type: object
+    properties:
+      audio_received:
+        type: boolean
+        description: true if valid audio was received and analyzed, false otherwise
+      speaker_count:
+        type: integer
+        description: Estimated count of distinct human speakers heard
+      voice_type:
+        type: string
+        description: "Classification of voice (e.g. female, male, child, multi-speaker, synthetic, non-speech)"
+      speech_present:
+        type: boolean
+        description: true if intelligible human speech is present in the audio
+      background_noise_level:
+        type: string
+        description: "one of: silent, low, moderate, high, unusable"
+      noise_types_detected:
+        type: array
+        items:
+          type: string
+        description: "Detected noise types (e.g. room_reverberation, street_traffic, electronic_hum, plosives, fan, typing, music, none)"
+      acoustic_quality_score:
+        type: integer
+        description: "Overall estimated acoustic quality from 1 (unusable) to 5 (studio reference quality)"
+      issues_summary:
+        type: string
+        description: Concise summary of any acoustic anomalies, distortions, clipping, or defects observed
+    required:
+      - audio_received
+      - speaker_count
+      - speech_present
+      - background_noise_level
+      - noise_types_detected
+      - acoustic_quality_score
+      - issues_summary
+  autorater:
+    model: gemini-2.5-flash
+    samplingCount: 4
+    flipEnabled: true

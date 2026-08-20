@@ -39,7 +39,7 @@ mizan-templates/
 - Every template's `metadata.id` is namespaced `"<pack-name>/<slug>"`, so two packs
   can each define e.g. a `helpfulness` metric without colliding on import.
 
-A worked example pack lives at [`packs/google-brand/`](packs/google-brand/).
+Canonical packs include [`packs/quickstart/`](packs/quickstart/), [`packs/audio/`](packs/audio/), and [`packs/google-brand/`](packs/google-brand/).
 
 ## Consuming packs
 

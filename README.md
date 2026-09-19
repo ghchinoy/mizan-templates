@@ -46,7 +46,7 @@ Canonical packs include [`packs/quickstart/`](packs/quickstart/), [`packs/audio/
 Get the CLI first:
 
 ```bash
-go install github.com/ghchinoy/mizan/cmd/mizan@v0.1.0
+go install github.com/ghchinoy/mizan/cmd/mizan@v0.2.0
 ```
 
 See [Mizan's Quickstart](https://github.com/ghchinoy/mizan#quickstart) for prerequisites (Go 1.26+, a GCP project with Vertex AI enabled, and application-default credentials).
@@ -113,7 +113,7 @@ all creds-free, no eval API calls) — so README- and docs-only PRs are unaffect
 
 Because this repo has no Go source of its own, the workflow **obtains a
 version-pinned `mizan` validator** via `go install` rather than building one. The
-version is pinned in the workflow file (`MIZAN_VERSION`, currently `v0.1.0`);
+version is pinned in the workflow file (`MIZAN_VERSION`, currently `v0.2.0`);
 maintainers bump the pin when Mizan cuts a newer tag.
 
 For the design rationale and the alternatives considered, see `ghchinoy/mizan` →

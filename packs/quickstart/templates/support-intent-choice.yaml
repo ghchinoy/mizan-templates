@@ -1,0 +1,31 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: quickstart/support-intent-choice
+  name: Support Ticket Intent Routing
+  description: Classify incoming support messages into one of four discrete operational routing buckets.
+  version: 1.0.0
+  maintainers:
+    - mizan-quickstart-team
+  license: Apache-2.0
+  tags:
+    - customer-support
+    - routing
+    - choice
+    - text
+spec:
+  kind: choice
+  modalities:
+    - text
+  choices:
+    - billing
+    - technical
+    - account
+    - general
+  inputs:
+    - name: message
+      modality: text
+      required: true
+  metricPromptTemplate: "Classify the primary intent of this support message: {{message}}"
+  autorater:
+    model: gemini-2.5-flash

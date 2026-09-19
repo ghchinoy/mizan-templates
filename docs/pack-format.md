@@ -71,8 +71,9 @@ metadata:
   # contentHash is COMPUTED by the tool (not authored); present in exports.
 
 spec:
-  kind: pointwise                # pointwise | pairwise | rubric | custom_schema
+  kind: pointwise                # boul | choice | score | pointwise | pairwise | rubric | custom_schema | heuristic
   modalities: [video, text]      # asset types this template accepts
+  choices: [billing, technical]  # choice only: list of allowed classification buckets
 
   inputs:                        # declared placeholders + modality
     - name: response             # the asset under evaluation
@@ -108,10 +109,14 @@ spec:
 
 | `spec.kind`     | Additional required fields |
 |-----------------|----------------------------|
+| `boul`          | none (evaluates true/false propositions; forbids pairwise/rubric/custom/choices fields) |
+| `choice`        | `choices: [ "<opt1>", "<opt2>", ... ]` (at least 2 unique non-empty items) |
+| `score`         | none (grades continuous/calibrated scale; forbids pairwise/custom/choices fields) |
 | `pointwise`     | none (forbids the pairwise/rubric/custom fields below) |
 | `pairwise`      | `candidateFieldName`, `baselineFieldName` (both also in `inputs`) |
 | `rubric`        | `rubricGroups: { <group>: [ "<criterion>", ... ] }` (non-empty) |
 | `custom_schema` | `responseSchema: { ...JSON Schema... }` (routes to the genai fallback) |
+| `heuristic`     | `heuristic: { type, target, ... }` (deterministic non-LLM check) |
 
 ---
 

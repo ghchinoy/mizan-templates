@@ -32,7 +32,7 @@ permissions:
 env:
   # Pinned to the current tagged mizan release. Bump this when mizan cuts a
   # newer tag.
-  MIZAN_VERSION: "v0.1.0"
+  MIZAN_VERSION: "v0.2.0"
 
 jobs:
   validate:

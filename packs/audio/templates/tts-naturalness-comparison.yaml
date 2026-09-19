@@ -1,0 +1,44 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: audio/tts-naturalness-comparison
+  name: TTS Voice Naturalness Pairwise Comparison
+  description: Compares two text-to-speech (TTS) or voice generator audio clips side-by-side to determine which sounds more natural, expressive, and human-like.
+  version: 1.0.0
+  maintainers:
+    - mizan-audio-team
+  license: Apache-2.0
+  tags:
+    - audio
+    - tts
+    - speech
+    - pairwise
+spec:
+  kind: pairwise
+  modalities:
+    - audio
+  inputs:
+    - name: baseline_audio
+      modality: audio
+      required: true
+    - name: candidate_audio
+      modality: audio
+      required: true
+  metricPromptTemplate: |
+    You are an expert voice rater comparing two Text-to-Speech (TTS) voice generation samples.
+    Baseline Audio: {{baseline_audio}}
+    Candidate Audio: {{candidate_audio}}
+
+    Evaluate and compare both audio samples on:
+    1. Prosody and Cadence: Natural conversational rhythm, stress, and phrasing vs. robotic monotone delivery.
+    2. Breathing and Micro-pauses: Realistic breath sounds and conversational pauses.
+    3. Emotional Expression: Warmth, engagement, and appropriate vocal inflections.
+    4. Audio Artifacts: Absence of robotic metallic resonance, clipping, pitch glitching, or unnatural transitions.
+
+    Pick the audio that sounds more natural, human-like, and pleasant to listen to.
+  candidateFieldName: candidate_audio
+  baselineFieldName: baseline_audio
+  autorater:
+    model: gemini-2.5-flash
+    samplingCount: 4
+    flipEnabled: true

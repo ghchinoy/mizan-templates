@@ -25,6 +25,8 @@ spread is the point: one import exercises every path mizan can take.
 
 | id | kind | modalities | what it does |
 |---|---|---|---|
+| `quickstart/brand-safety-boul` | boul | text | Evaluate whether customer-facing content adheres strictly to brand safety guidelines (true/false). |
+| `quickstart/support-intent-choice` | choice | text | Classify incoming support messages into one of four discrete operational routing buckets. |
 | `quickstart/text-response-helpfulness` | pointwise | text | Score a single customer-support reply for helpfulness on an explicit 1–5 scale. |
 | `quickstart/image-visual-quality` | pointwise | image | Score the overall visual quality of an image on a 1–5 scale. |
 | `quickstart/video-brand-alignment` | pointwise | video, text | Score how well a video ad aligns with a supplied brand guideline. |
@@ -38,7 +40,9 @@ spread is the point: one import exercises every path mizan can take.
 
 ### What each metric kind demonstrates
 
-- **pointwise** — score one response against a scale. The simplest kind; the
+- **boul** — evaluate whether a proposition holds true or false, returning boolean `PASS`/`FAIL` and a confidence score.
+- **choice** — route an input state into exactly one of discrete pre-defined buckets using grammar-guided decoding.
+- **score / pointwise** — score one response against a scale. The simplest kind; the
   four pointwise cells show the same authoring pattern working across text,
   image, video, and audio.
 - **pairwise** — present two responses and pick the better one. Use `Choice` as

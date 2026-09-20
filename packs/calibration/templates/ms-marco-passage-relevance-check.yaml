@@ -1,0 +1,52 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/ms-marco-passage-relevance-check
+  name: Passage Relevance Check (MS MARCO)
+  description: >
+    Retrieval-grounding proposition calibrated against microsoft/ms_marco (config v1.1 or
+    v2.1). Each row nests ~6-10 candidate passages under `passages`, of which the ones a
+    human marked as answer-bearing have `is_selected == 1`; explode the row into one eval
+    per (query, passage) pair. passed=true means the passage answers the query. The class
+    is heavily imbalanced -- most pairs are negative -- so report precision/recall, never
+    raw accuracy.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - ms-marco
+    - retrieval
+    - grounding
+    - boul
+    - text
+spec:
+  kind: boul
+  modalities:
+    - text
+  inputs:
+    - name: query
+      modality: text
+      required: true
+    - name: passage
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Decide the proposition: a human answering this query would pick this passage as the one
+    that contains the answer.
+
+    Being on the same topic is not enough -- the passage must actually contain the
+    information the query asks for.
+
+    Query:
+    {{query}}
+
+    Passage:
+    {{passage}}
+  systemInstruction: |
+    Most candidate passages are topically related but do NOT answer the query; false is the
+    common, correct verdict. Judge only against the passage text, never your own knowledge
+    of the answer.
+  autorater:
+    model: gemini-3.5-flash-lite

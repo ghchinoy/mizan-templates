@@ -1,0 +1,56 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/anli-entailment-select
+  name: Adversarial NLI Select (ANLI)
+  description: >
+    Three-way natural language inference calibrated against facebook/anli config `plain_text`
+    (splits train_r1/dev_r1/test_r1 ... _r3). Every ANLI item was written by a human who had
+    already fooled a strong model, so accuracy here is a hard floor on a judge's entailment
+    reasoning; round r1 -> r3 is increasing difficulty and should be reported separately.
+    Gold `label` is a ClassLabel with names [entailment, neutral, contradiction] (0/1/2).
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - anli
+    - nli
+    - adversarial
+    - choice
+    - text
+spec:
+  kind: choice
+  modalities:
+    - text
+  choices:
+    - entailment
+    - neutral
+    - contradiction
+  inputs:
+    - name: premise
+      modality: text
+      required: true
+    - name: hypothesis
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Decide the relationship between the premise and the hypothesis.
+
+    - entailment: a reasonable person reading the premise would conclude the hypothesis is true.
+    - neutral: the hypothesis might be true or false; the premise does not settle it.
+    - contradiction: a reasonable person reading the premise would conclude the hypothesis is false.
+
+    Premise:
+    {{premise}}
+
+    Hypothesis:
+    {{hypothesis}}
+  systemInstruction: |
+    These items were written specifically to fool models. The trap is usually a numeric,
+    temporal, or coreference detail that is nearly -- but not exactly -- what the premise
+    says. Re-read the premise for that detail before deciding. Use only the premise; ignore
+    outside world knowledge.
+  autorater:
+    model: gemini-3.5-flash-lite

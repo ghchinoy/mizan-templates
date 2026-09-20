@@ -1,0 +1,53 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/grounding-claim-support-check
+  name: Grounded Claim Support Check (LLM-AggreFact)
+  description: >
+    Document-grounded fact-verification proposition, shaped for LLM-AggreFact
+    (lytang/LLM-AggreFact: columns `dataset`, `doc`, `claim`, `label`, where 1 = supported).
+    passed=true means the document supports the claim. ALWAYS report per-constituent
+    (AggreFact-CNN/XSum, TofuEval, Wice, Reveal, ClaimVerify, FactCheck-GPT, ExpertQA, LFQA,
+    RAGTruth): they differ enormously in document length and claim style, and a single
+    pooled number hides that. The HF repo is GATED and CC-BY-ND-4.0 -- see the pack README.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - llm-aggrefact
+    - grounding
+    - hallucination
+    - rag
+    - boul
+    - text
+spec:
+  kind: boul
+  modalities:
+    - text
+  inputs:
+    - name: document
+      modality: text
+      required: true
+    - name: claim
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Decide the proposition: the document SUPPORTS the claim.
+
+    The claim is supported only if every part of it can be verified from the document --
+    directly stated, or entailed by combining sentences in it. If any part is absent,
+    contradicted, or only plausible, the claim is not supported.
+
+    Document:
+    {{document}}
+
+    Claim:
+    {{claim}}
+  systemInstruction: |
+    Judge grounding, not truth: a real-world-true claim that the document does not establish
+    is NOT supported. Use no outside knowledge. Do not penalise paraphrase, reordering, or
+    a claim that states less than the document.
+  autorater:
+    model: gemini-3.5-flash-lite

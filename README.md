@@ -39,7 +39,14 @@ mizan-templates/
 - Every template's `metadata.id` is namespaced `"<pack-name>/<slug>"`, so two packs
   can each define e.g. a `helpfulness` metric without colliding on import.
 
-Canonical packs include [`packs/quickstart/`](packs/quickstart/), [`packs/audio/`](packs/audio/), and [`packs/google-brand/`](packs/google-brand/).
+Canonical packs include [`packs/quickstart/`](packs/quickstart/), [`packs/audio/`](packs/audio/), [`packs/google-brand/`](packs/google-brand/), and [`packs/calibration/`](packs/calibration/).
+
+Where the other packs judge *your* output, [`packs/calibration/`](packs/calibration/)
+judges *the judge*: its `boul` / `choice` / `score` templates are written so their
+verdicts compare 1:1 against the gold labels of public, human-annotated datasets
+(Civil Comments, GoEmotions, CLINC150, ANLI, MS MARCO, Yelp, AgentDrift, and more),
+so you can measure judge-human agreement before trusting a judge in a gate.
+
 
 ## Consuming packs
 

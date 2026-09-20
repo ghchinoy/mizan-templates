@@ -1,0 +1,54 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/sst5-sentiment-rate
+  name: Fine-Grained Sentiment Rate (SST-5) [HELD OUT]
+  description: >
+    HELD OUT for out-of-distribution calibration -- do not tune prompts on this one.
+    SetFit/sst5 has columns `text`, `label` (0-4) and `label_text`
+    (very negative / negative / neutral / positive / very positive), so the judge's score
+    compares to `label` with no offset. Same five-level ordinal shape as the Yelp template
+    but a very different distribution -- short, ornate movie-review fragments instead of
+    long plain-spoken business reviews -- which is exactly what makes it a distribution
+    shift rather than a second in-domain test.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - held-out
+    - sst5
+    - sentiment
+    - ordinal
+    - score
+    - text
+spec:
+  kind: score
+  modalities:
+    - text
+  inputs:
+    - name: sentence
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Rate the sentiment of this movie-review fragment on a 0 to 4 integer scale.
+
+    0 = very negative
+    1 = negative
+    2 = neutral
+    3 = positive
+    4 = very positive
+
+    Fragment:
+    {{sentence}}
+
+    Return 2 when the fragment is balanced, purely descriptive, or too short to carry a
+    clear judgement.
+  systemInstruction: |
+    These are fragments of professional criticism: the sentiment is often carried by an
+    ironic or ornate turn of phrase rather than by explicit praise or complaint. Reserve 0
+    and 4 for unmistakably strong language -- the middle three levels carry most of the
+    corpus.
+  autorater:
+    model: gemini-3.5-flash-lite

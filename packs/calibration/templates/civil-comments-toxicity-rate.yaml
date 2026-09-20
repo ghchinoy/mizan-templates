@@ -1,0 +1,45 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/civil-comments-toxicity-rate
+  name: Comment Toxicity Rate (Civil Comments)
+  description: >
+    The same google/civil_comments gold column as calibration/civil-comments-toxicity-check,
+    but expressed as a `score` instead of a `boul`. The judge emits a continuous 0.0-1.0
+    estimate that is directly comparable to the fractional `toxicity` label with mean
+    absolute error -- no thresholding required. Run both templates over the same rows to
+    see whether a soft label is better served by score or by boul confidence.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - civil-comments
+    - toxicity
+    - soft-label
+    - score
+    - text
+spec:
+  kind: score
+  modalities:
+    - text
+  inputs:
+    - name: comment
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Ten crowd raters were asked whether this comment is rude, disrespectful, or
+    unreasonable enough that they would leave the conversation.
+
+    Report the FRACTION of those ten raters who marked it toxic, as a number between
+    0.0 and 1.0. Use the full range: 0.0 for plainly civil text, 0.2 for mildly barbed
+    text, 0.5 for genuinely contested text, 0.9+ for open abuse.
+
+    Comment:
+    {{comment}}
+  systemInstruction: |
+    Return a calibrated frequency, not a severity opinion. Values cluster near 0.0 in this
+    corpus -- most comments are civil -- so do not inflate scores to seem discriminating.
+  autorater:
+    model: gemini-3.5-flash-lite

@@ -1,0 +1,59 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/clinc-oos-intent-select
+  name: Banking Intent Select with Out-of-Scope (CLINC150)
+  description: >
+    Intent routing with an explicit escape hatch, calibrated against clinc/clinc_oos config
+    `plus` (151 labels = 150 in-scope intents + `oos`). This template covers an eleven-intent
+    banking slice plus `out_of_scope`; filter the gold split to those eleven intents and to
+    `oos` (mapped to `out_of_scope`) before scoring. The interesting number is not overall
+    accuracy but the out-of-scope recall / in-scope false-abstention trade-off -- config
+    `plus` exists precisely because that is where routers fail.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - clinc150
+    - intent
+    - out-of-scope
+    - choice
+    - text
+spec:
+  kind: choice
+  modalities:
+    - text
+  choices:
+    - account_blocked
+    - balance
+    - bill_balance
+    - bill_due
+    - freeze_account
+    - interest_rate
+    - min_payment
+    - pay_bill
+    - pin_change
+    - routing
+    - transfer
+    - out_of_scope
+  inputs:
+    - name: utterance
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Route this utterance to the banking assistant skill that should handle it.
+
+    Select `out_of_scope` -- and only `out_of_scope` -- when the utterance is not a request
+    this banking assistant can serve. Out-of-scope utterances are often fluent, plausible
+    requests for a DIFFERENT domain (travel, cooking, smart home, small talk), so do not
+    force a banking intent onto them.
+
+    Utterance:
+    {{utterance}}
+  systemInstruction: |
+    Pick exactly one skill. Never guess a banking intent because it is the closest match on
+    surface wording; a wrong in-scope route is more expensive than an honest abstention.
+  autorater:
+    model: gemini-3.5-flash-lite

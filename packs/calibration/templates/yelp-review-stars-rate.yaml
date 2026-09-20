@@ -1,0 +1,47 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/yelp-review-stars-rate
+  name: Review Star Rating (Yelp Review Full)
+  description: >
+    Ordered five-level grading calibrated against Yelp/yelp_review_full, whose ClassLabel
+    names are ["1 star", "2 star", "3 stars", "4 stars", "5 stars"] stored as indices 0-4 --
+    so gold stars = label + 1. Round the judge's score to the nearest integer for exact-match
+    accuracy, and keep the unrounded value for MAE and off-by-one rate; the diagnostic signal
+    is whether errors are adjacent (well-calibrated) or scattered.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - yelp
+    - sentiment
+    - ordinal
+    - score
+    - text
+spec:
+  kind: score
+  modalities:
+    - text
+  inputs:
+    - name: review
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Recover the star rating the author of this review gave, on a 1 to 5 integer scale.
+
+    1 = angry, would warn others away
+    2 = disappointed, notable problems
+    3 = mixed, some good and some bad
+    4 = satisfied with minor complaints
+    5 = enthusiastic, would return
+
+    Review:
+    {{review}}
+  systemInstruction: |
+    Recover the author's rating, not your own verdict on the business. Reviewers are
+    polarised: 1 and 5 are far more common than 3. A politely worded complaint is often a
+    2, and faint praise with a real complaint is often a 3.
+  autorater:
+    model: gemini-3.5-flash-lite

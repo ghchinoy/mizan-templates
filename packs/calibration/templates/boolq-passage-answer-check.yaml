@@ -1,0 +1,52 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/boolq-passage-answer-check
+  name: Yes/No Reading Comprehension Check (BoolQ) [HELD OUT]
+  description: >
+    HELD OUT for out-of-distribution calibration -- do not tune prompts on this one.
+    google/boolq pairs a naturally-occurring yes/no question with a Wikipedia passage;
+    gold `answer` is a real boolean, which makes it the cleanest possible probe of whether
+    a boul judge's `passed` field and its `confidence` field move together. The test split
+    is withheld by SuperGLUE, so use `validation` (3,270 rows). Answers skew yes (~62%),
+    so compare against that base rate, not against 50%.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - held-out
+    - boolq
+    - reading-comprehension
+    - boul
+    - text
+spec:
+  kind: boul
+  modalities:
+    - text
+  inputs:
+    - name: passage
+      modality: text
+      required: true
+    - name: question
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Answer the yes/no question using only the passage. passed=true means yes,
+    passed=false means no.
+
+    The questions are typed by real users, so they are sometimes ungrammatical or missing
+    a question mark; answer the evident intent.
+
+    Passage:
+    {{passage}}
+
+    Question:
+    {{question}}
+  systemInstruction: |
+    The answer is always derivable from the passage, though often only by inference rather
+    than by a matching sentence. Commit to true or false -- there is no third option -- and
+    use the passage, not outside knowledge, when the two disagree.
+  autorater:
+    model: gemini-3.5-flash-lite

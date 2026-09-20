@@ -1,0 +1,48 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/civil-comments-toxicity-check
+  name: Comment Toxicity Check (Civil Comments)
+  description: >
+    Binary toxicity proposition calibrated against google/civil_comments. passed=true means
+    the comment IS toxic. The gold column `toxicity` is FRACTIONAL (the share of crowd raters
+    who called it toxic), so the boul `confidence` float is the part under test, not just the
+    boolean: threshold gold at 0.5 to score `passed`, and correlate `confidence` against the
+    raw fraction to measure calibration.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - civil-comments
+    - toxicity
+    - soft-label
+    - boul
+    - text
+spec:
+  kind: boul
+  modalities:
+    - text
+  inputs:
+    - name: comment
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    A pool of ten crowd raters was asked: "Is this comment rude, disrespectful, or
+    unreasonable enough that you would be likely to leave the conversation?"
+
+    Decide the proposition: A MAJORITY of those raters would mark this comment toxic.
+
+    Set confidence to the fraction of the ten raters you believe would mark it toxic
+    (0.0 = nobody, 1.0 = everybody). Do not report certainty in your own reasoning --
+    report the expected human agreement rate.
+
+    Comment:
+    {{comment}}
+  systemInstruction: |
+    Judge the comment as written, in isolation. Profanity alone is not automatically
+    toxic; a calm sentence can be toxic if it demeans a person or group. Do not moderate
+    for policy, do not rewrite, and do not refuse -- estimate what the raters did.
+  autorater:
+    model: gemini-3.5-flash-lite

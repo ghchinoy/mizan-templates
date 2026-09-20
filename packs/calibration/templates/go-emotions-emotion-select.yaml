@@ -1,0 +1,74 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/go-emotions-emotion-select
+  name: Reddit Comment Emotion Select (GoEmotions)
+  description: >
+    28-way emotion routing calibrated against google-research-datasets/go_emotions config
+    `raw`, which ships ONE ROW PER RATER (`rater_id` plus 28 binary columns). Collapse the
+    ~3-5 rater rows that share an `id` into a per-emotion rater fraction, then score this
+    template's single `selection` against the plurality emotion. The rater spread is what
+    makes this a soft-select probe: agreement should fall off as the gold distribution flattens.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - go-emotions
+    - emotion
+    - soft-label
+    - choice
+    - text
+spec:
+  kind: choice
+  modalities:
+    - text
+  choices:
+    - admiration
+    - amusement
+    - anger
+    - annoyance
+    - approval
+    - caring
+    - confusion
+    - curiosity
+    - desire
+    - disappointment
+    - disapproval
+    - disgust
+    - embarrassment
+    - excitement
+    - fear
+    - gratitude
+    - grief
+    - joy
+    - love
+    - nervousness
+    - optimism
+    - pride
+    - realization
+    - relief
+    - remorse
+    - sadness
+    - surprise
+    - neutral
+  inputs:
+    - name: comment
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Crowd raters labelled the emotion expressed by the AUTHOR of this Reddit comment.
+
+    Select the single emotion the largest number of raters chose. Choose `neutral` when no
+    emotion is clearly expressed -- it is the most common label in this corpus, not a
+    fallback of last resort.
+
+    Comment:
+    {{comment}}
+  systemInstruction: |
+    Label the author's emotion, not your reaction to the comment and not the emotion of
+    anyone the comment describes. The comments are short, informal, and stripped of thread
+    context; judge only what is on the page.
+  autorater:
+    model: gemini-3.5-flash-lite

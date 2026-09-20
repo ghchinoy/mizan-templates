@@ -6,3 +6,6 @@
 # local Mizan working state / caches (should never be committed here)
 *.db
 .cache/
+.env
+.env.*
+

@@ -1,0 +1,58 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: calibration/chaos-nli-entailment-select
+  name: Human-Distribution NLI Select (ChaosNLI)
+  description: >
+    The same three NLI labels as calibration/anli-entailment-select, but graded against
+    ChaosNLI, where every item carries 100 fresh annotations. The gold is a DISTRIBUTION
+    (`label_dist`, `label_count`, `entropy`), so the useful report is accuracy against
+    `majority_label` bucketed by `entropy`: a judge that only matches people on low-entropy
+    items is not actually doing inference. Use the public mirror
+    metaeval/chaos-mnli-ambiguity (1,599 MNLI items, premise/hypothesis inlined) -- the
+    original ChaosNLI Dropbox archive is dead.
+  version: 0.1.0
+  maintainers:
+    - mizan-calibration-team
+  license: Apache-2.0
+  tags:
+    - calibration
+    - chaos-nli
+    - nli
+    - soft-label
+    - choice
+    - text
+spec:
+  kind: choice
+  modalities:
+    - text
+  choices:
+    - entailment
+    - neutral
+    - contradiction
+  inputs:
+    - name: premise
+      modality: text
+      required: true
+    - name: hypothesis
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    One hundred crowdworkers independently labelled the relationship between this premise
+    and hypothesis as entailment, neutral, or contradiction.
+
+    Select the label the LARGEST NUMBER of them chose -- not the label you consider most
+    defensible. Many of these items are genuinely ambiguous and the crowd splits; your job
+    is to predict where the plurality landed.
+
+    Premise:
+    {{premise}}
+
+    Hypothesis:
+    {{hypothesis}}
+  systemInstruction: |
+    Predict the human plurality, not ground truth. Crowdworkers read quickly and lean on the
+    obvious reading; when a strict logician would say neutral but the everyday reading is
+    entailment, the crowd usually says entailment.
+  autorater:
+    model: gemini-3.5-flash-lite

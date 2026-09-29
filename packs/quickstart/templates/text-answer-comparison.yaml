@@ -26,6 +26,6 @@ spec:
     candidateFieldName: candidate_answer
     baselineFieldName: baseline_answer
     autorater:
-        model: gemini-2.5-flash
+        model: gemini-3.5-flash
         samplingCount: 4
         flipEnabled: true

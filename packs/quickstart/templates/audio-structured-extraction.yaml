@@ -44,6 +44,6 @@ spec:
             - transcript_heard
         type: object
     autorater:
-        model: gemini-2.5-flash
+        model: gemini-3.5-flash
         samplingCount: 4
         flipEnabled: true

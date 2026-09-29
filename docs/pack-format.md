@@ -96,11 +96,11 @@ spec:
     Be strict. Penalize off-brand tone even when production quality is high.
 
   autorater:
-    # Publisher-relative model id ONLY (e.g. "gemini-2.5-pro" or
-    # "publishers/google/models/gemini-2.5-pro"). Do NOT embed a project/location —
+    # Publisher-relative model id ONLY (e.g. "gemini-3.5-flash" or
+    # "publishers/google/models/gemini-3.5-flash"). Do NOT embed a project/location —
     # packs are portable. Mizan expands this to the full resource name the Eval
     # Service requires at run time, using the consumer's configured project/location.
-    model: gemini-2.5-pro
+    model: gemini-3.5-flash
     samplingCount: 4             # 1-32
     flipEnabled: false           # pairwise-only; ignored otherwise
 ```

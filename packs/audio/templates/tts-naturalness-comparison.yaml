@@ -39,6 +39,6 @@ spec:
   candidateFieldName: candidate_audio
   baselineFieldName: baseline_audio
   autorater:
-    model: gemini-2.5-flash
+    model: gemini-3.5-flash
     samplingCount: 4
     flipEnabled: true

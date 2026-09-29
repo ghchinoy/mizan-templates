@@ -41,6 +41,6 @@ spec:
 
     In your explanation, list any specific dropped words, extra words, or mispronounced terms.
   autorater:
-    model: gemini-3.8-flash
+    model: gemini-3.5-flash
     samplingCount: 4
     flipEnabled: true

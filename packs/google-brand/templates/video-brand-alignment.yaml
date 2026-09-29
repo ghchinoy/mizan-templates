@@ -49,6 +49,6 @@ spec:
     # Publisher-relative model id ONLY — Mizan expands this to the full resource
     # name (projects/<proj>/locations/<loc>/publishers/google/models/<model>) at
     # run time using the consumer's project/location. Do NOT embed a project here.
-    model: gemini-2.5-pro
+    model: gemini-3.5-flash
     samplingCount: 4               # 1-32
     flipEnabled: false             # pairwise-only; ignored for pointwise

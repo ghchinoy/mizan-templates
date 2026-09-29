@@ -30,6 +30,6 @@ spec:
             - The advice is technically accurate
             - It would plausibly improve query speed
     autorater:
-        model: gemini-3.8-flash
+        model: gemini-3.5-flash
         samplingCount: 4
         flipEnabled: true

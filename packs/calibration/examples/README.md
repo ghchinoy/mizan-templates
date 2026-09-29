@@ -18,7 +18,7 @@ Three case files, one per decision primitive, in the JSONL schema that
 mizan eval compare-engines \
   --dataset packs/calibration/examples/boul-cases.jsonl \
   --engine-a vertex --engine-b vertex \
-  --model-a gemini-2.5-flash --model-b gemini-2.5-pro \
+  --model-a gemini-3.5-flash --model-b gemini-3.5-flash-lite \
   --output-file report.json
 ```
 

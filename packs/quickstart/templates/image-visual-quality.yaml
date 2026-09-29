@@ -22,6 +22,6 @@ spec:
           required: true
     metricPromptTemplate: 'You are a photo-quality rater. Rate the overall visual quality of this image on a 1-5 scale, where 1 = poor (blurry, badly exposed, poorly composed) and 5 = excellent (sharp, well-exposed, well-composed). Briefly justify. Image: {{image}}'
     autorater:
-        model: gemini-3.8-flash
+        model: gemini-3.5-flash
         samplingCount: 4
         flipEnabled: true

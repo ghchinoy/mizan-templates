@@ -1,0 +1,24 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/trajectory-precision
+  name: Trajectory Precision
+  description: >
+    Matched predicted calls / predicted calls.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, computation]
+spec:
+  kind: computation
+  modalities: [text]
+  inputs:
+    - name: response
+      modality: text
+      required: true
+    - name: reference
+      modality: text
+      required: true
+  native:
+    metric: trajectory_precision

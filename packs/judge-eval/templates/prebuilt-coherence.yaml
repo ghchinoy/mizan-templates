@@ -1,0 +1,24 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/prebuilt-coherence
+  name: Vertex Prebuilt Coherence (SummEval)
+  description: >
+    Vertex prebuilt coherence (1-5) compared with SummEval expert coherence.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, coherence, prebuilt]
+spec:
+  kind: prebuilt
+  modalities: [text]
+  inputs:
+    - name: summary
+      modality: text
+      required: true
+  native:
+    metric: coherence
+    responseField: summary
+  autorater:
+    model: gemini-3.5-flash-lite

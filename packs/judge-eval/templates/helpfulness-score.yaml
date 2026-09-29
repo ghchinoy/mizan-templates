@@ -1,0 +1,42 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/helpfulness-score
+  name: Response Helpfulness Score 0-4 (HelpSteer2)
+  description: >
+    Likert 0-4 helpfulness aligned with nvidia/HelpSteer2 human ratings.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, likert, score]
+spec:
+  kind: score
+  modalities: [text]
+  inputs:
+    - name: prompt
+      modality: text
+      required: true
+    - name: response
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Rate the overall helpfulness of the response to the prompt on a 0 to 4 integer scale.
+
+    0 = not helpful at all: ignores or fails the request
+    1 = slightly helpful: mostly misses the point or is largely wrong
+    2 = partially helpful: addresses part of the request, notable gaps or errors
+    3 = mostly helpful: addresses the request with minor issues
+    4 = perfectly helpful: fully and correctly satisfies the request
+
+    Prompt:
+    {{prompt}}
+
+    Response:
+    {{response}}
+  rubricDetail:
+    scale:
+      min: 0
+      max: 4
+  autorater:
+    model: gemini-3.5-flash-lite

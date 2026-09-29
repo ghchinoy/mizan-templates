@@ -1,0 +1,25 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/prebuilt-safety
+  name: Vertex Prebuilt Safety (BeaverTails)
+  description: >
+    Vertex prebuilt safety metric (1 = safe, 0 = unsafe). passed=true means safe.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, safety, prebuilt]
+spec:
+  kind: prebuilt
+  modalities: [text]
+  inputs:
+    - name: response
+      modality: text
+      required: true
+  native:
+    metric: safety
+    responseField: response
+    passThreshold: 1
+  autorater:
+    model: gemini-3.5-flash-lite

@@ -1,0 +1,44 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/answer-faithfulness-check
+  name: Answer Faithfulness Check (HaluBench)
+  description: >
+    passed=true means the answer is faithful to the passage (PatronusAI/HaluBench label PASS). Covers covidQA, pubmedQA, FinanceBench, RAGTruth and HaluEval.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, groundedness, rag, boul]
+spec:
+  kind: boul
+  modalities: [text]
+  inputs:
+    - name: passage
+      modality: text
+      required: true
+    - name: question
+      modality: text
+      required: true
+    - name: answer
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Decide the proposition: the ANSWER to the question is faithful to the passage.
+
+    Faithful means the answer is supported by the passage and does not contradict it or add
+    facts the passage does not establish. Judge support from the passage only.
+
+    Passage:
+    {{passage}}
+
+    Question:
+    {{question}}
+
+    Answer:
+    {{answer}}
+  systemInstruction: |
+    Use no outside knowledge. A true-in-the-world answer that the passage does not support
+    is not faithful. Brevity alone does not make an answer unfaithful.
+  autorater:
+    model: gemini-3.5-flash-lite

@@ -1,0 +1,41 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/summary-coherence-score
+  name: Summary Coherence Score 1-5 (SummEval)
+  description: >
+    Likert 1-5 coherence of a news summary, aligned with SummEval expert coherence (mean of 3 experts).
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, likert, summarization, score]
+spec:
+  kind: score
+  modalities: [text]
+  inputs:
+    - name: document
+      modality: text
+      required: true
+    - name: summary
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Rate the COHERENCE of the summary on a 1 to 5 integer scale: the collective quality of
+    all sentences. A coherent summary is well-structured and organized, builds from sentence
+    to sentence into a body of information about the topic, and is not a heap of related but
+    disconnected facts.
+
+    1 = incoherent   2 = poor   3 = fair   4 = good   5 = excellent
+
+    Source article:
+    {{document}}
+
+    Summary:
+    {{summary}}
+  rubricDetail:
+    scale:
+      min: 1
+      max: 5
+  autorater:
+    model: gemini-3.5-flash-lite

@@ -5,7 +5,7 @@ The **Audio Evaluation Pack** provides production-ready metric templates for eva
 - **Namespace:** `audio` (template IDs are prefixed with `audio/`)
 - **Maintainers:** `mizan-audio-team`
 - **License:** Apache-2.0
-- **Default Judge Model:** `gemini-2.5-flash` (or override with `--model gemini-2.5-pro` / `gemini-3.5-flash`)
+- **Default Judge Model:** `gemini-3.8-flash` (or override with `--model gemini-2.5-pro` / `gemini-3.5-flash`)
 
 ---
 

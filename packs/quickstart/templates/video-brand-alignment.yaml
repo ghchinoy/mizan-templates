@@ -28,6 +28,6 @@ spec:
     metricPromptTemplate: 'You are a brand-compliance rater. Given a brand guideline and a video ad, rate how well the ad aligns with the guideline on a 1-5 scale (1 = off-brand, 5 = fully on-brand). Consider tone, visual identity (logo, colors), and messaging consistency. Brand guideline: {{brand_guideline}}  Evaluate this video: {{response}}'
     systemInstruction: Be strict. Penalize off-brand tone even when production quality is high.
     autorater:
-        model: gemini-2.5-flash
+        model: gemini-3.8-flash
         samplingCount: 4
         flipEnabled: true

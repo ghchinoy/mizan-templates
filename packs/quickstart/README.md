@@ -10,7 +10,7 @@ location, and staging bucket.
 - **Namespace:** `quickstart` (every template id begins `quickstart/`)
 - **Maintainers:** `mizan-quickstart-team`
 - **License:** Apache-2.0
-- **Default judge:** `gemini-2.5-flash` (mizan's built-in default)
+- **Default judge:** `gemini-3.8-flash` (mizan's built-in default)
 
 ```bash
 mizan registry import <path-to-mizan-templates-checkout>
@@ -126,7 +126,7 @@ carry into your own templates.
 
 Scores are model behavior and drift over time, so this pack carries template
 *definitions* only — no expected results are baked into the YAML. As a rough
-calibration reference from a live run on `gemini-2.5-flash`: a clearly good
+calibration reference from a live run on `gemini-3.8-flash`: a clearly good
 support reply scored 5 and a dismissive one scored 1; the cat-on-snow photo
 scored 5 for visual quality; and the image rubric scored brand-logo criteria 1
 (correctly — there is no logo) while safety and technical quality scored 5.
@@ -137,10 +137,10 @@ Treat these as illustrative, not as a contract.
 Re-run any cell with `--model gemini-3.5-flash-lite` to see a **stricter, more
 literal** calibration: on guideline- and rubric-anchored multimodal cells the
 newer model tends to score lower and enforce criteria more literally (for
-example, penalizing competitor-brand mentions a `gemini-2.5-flash` judge may
-gloss). If you tuned prompts or thresholds against `gemini-2.5-flash`, re-check
+example, penalizing competitor-brand mentions a `gemini-3.8-flash` judge may
+gloss). If you tuned prompts or thresholds against `gemini-3.8-flash`, re-check
 them before switching defaults. This is an aside, not a requirement — the pack
-runs on its `gemini-2.5-flash` default out of the box.
+runs on its `gemini-3.8-flash` default out of the box.
 
 ## Format
 

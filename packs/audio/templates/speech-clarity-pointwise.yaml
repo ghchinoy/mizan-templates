@@ -33,6 +33,6 @@ spec:
 
     Provide a concise justification explaining the score based on intelligibility, noise floor, and acoustic fidelity.
   autorater:
-    model: gemini-2.5-flash
+    model: gemini-3.8-flash
     samplingCount: 4
     flipEnabled: true

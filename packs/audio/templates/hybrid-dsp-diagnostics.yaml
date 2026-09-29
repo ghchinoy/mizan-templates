@@ -51,6 +51,6 @@ spec:
 
     In your explanation, correlate the numerical ViSQOL and SNR measurements with what you hear (e.g. spectral distortion, high-frequency rolloff, clipping, quantization noise, room acoustics).
   autorater:
-    model: gemini-2.5-flash
+    model: gemini-3.8-flash
     samplingCount: 4
     flipEnabled: true

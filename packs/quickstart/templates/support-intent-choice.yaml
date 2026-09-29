@@ -28,4 +28,4 @@ spec:
       required: true
   metricPromptTemplate: "Classify the primary intent of this support message: {{message}}"
   autorater:
-    model: gemini-2.5-flash
+    model: gemini-3.5-flash-lite

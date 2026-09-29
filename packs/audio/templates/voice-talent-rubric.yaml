@@ -36,6 +36,6 @@ spec:
       - The vocal tone conveys appropriate energy, warmth, and engagement
       - Pitch variation is dynamic rather than flat or robotic
   autorater:
-    model: gemini-2.5-flash
+    model: gemini-3.8-flash
     samplingCount: 4
     flipEnabled: true

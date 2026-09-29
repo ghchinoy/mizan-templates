@@ -32,6 +32,6 @@ spec:
             - The image is in sharp focus
             - The main subject is well-lit and clearly visible
     autorater:
-        model: gemini-2.5-flash
+        model: gemini-3.8-flash
         samplingCount: 4
         flipEnabled: true

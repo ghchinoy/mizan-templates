@@ -1,0 +1,50 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/pairwise-multiturn-quality
+  name: Pairwise Multi-Turn Quality (MT-Bench turn 2)
+  description: >
+    Which assistant better answers the follow-up (second) turn, given each assistants own first-turn answer? Gold is MT-Bench expert preference on turn 2.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, pairwise, multi-turn]
+spec:
+  kind: pairwise
+  modalities: [text]
+  inputs:
+    - name: history
+      modality: text
+      required: true
+    - name: question
+      modality: text
+      required: true
+    - name: baseline
+      modality: text
+      required: true
+    - name: candidate
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Two AI assistants had a two-turn conversation with the same user. Compare how well each
+    answers the user's FOLLOW-UP question, taking into account consistency with that
+    assistant's own first answer. Do not prefer a response for length or position.
+
+    First turn (the user's opening message and each assistant's first answer):
+    {{history}}
+
+    User follow-up question:
+    {{question}}
+
+    Response A (baseline) to the follow-up:
+    {{baseline}}
+
+    Response B (candidate) to the follow-up:
+    {{candidate}}
+  baselineFieldName: baseline
+  candidateFieldName: candidate
+  autorater:
+    model: gemini-3.5-flash-lite
+    samplingCount: 1
+    flipEnabled: false

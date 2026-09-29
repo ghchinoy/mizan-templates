@@ -1,0 +1,24 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/prebuilt-fluency
+  name: Vertex Prebuilt Fluency (SummEval)
+  description: >
+    Vertex prebuilt fluency (1-5) compared with SummEval expert fluency.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, fluency, prebuilt]
+spec:
+  kind: prebuilt
+  modalities: [text]
+  inputs:
+    - name: summary
+      modality: text
+      required: true
+  native:
+    metric: fluency
+    responseField: summary
+  autorater:
+    model: gemini-3.5-flash-lite

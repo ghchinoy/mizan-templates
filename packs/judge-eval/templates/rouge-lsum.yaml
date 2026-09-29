@@ -1,0 +1,25 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/rouge-lsum
+  name: ROUGE-Lsum
+  description: >
+    Summary-level ROUGE-L F-measure, 0-1.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, computation]
+spec:
+  kind: computation
+  modalities: [text]
+  inputs:
+    - name: response
+      modality: text
+      required: true
+    - name: reference
+      modality: text
+      required: true
+  native:
+    metric: rouge
+    rougeType: rougeLsum

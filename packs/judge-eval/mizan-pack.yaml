@@ -1,0 +1,10 @@
+apiVersion: mizan.dev/v1alpha1
+kind: Pack
+metadata:
+    name: judge-eval
+    version: 0.1.0
+    description: Templates for Experiment 07, which compares autoregressive (Gemini) and non-autoregressive (DiffusionGemma) judges, and no-model computation metrics, against human or gold labels across the Vertex Gen AI evaluation capabilities.
+    maintainers: [mizan-judge-eval]
+    license: Apache-2.0
+spec:
+    requiresApiVersion: mizan.dev/v1alpha1

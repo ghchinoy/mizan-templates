@@ -1,0 +1,45 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/pairwise-instruction-following
+  name: Pairwise Instruction Following (LLMBar via RewardBench)
+  description: >
+    Which response follows the instruction precisely? LLMBar natural and adversarial subsets, where the dispreferred output is often more polished but deviates from the instruction.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, pairwise, instruction-following]
+spec:
+  kind: pairwise
+  modalities: [text]
+  inputs:
+    - name: question
+      modality: text
+      required: true
+    - name: baseline
+      modality: text
+      required: true
+    - name: candidate
+      modality: text
+      required: true
+  metricPromptTemplate: |
+    Decide which response better FOLLOWS THE INSTRUCTION. Prioritize whether the response
+    honestly and precisely executes what was asked (content, format, constraints) over style,
+    fluency, length or tone. A polished response that does something other than what was
+    asked is worse than a plain one that does exactly what was asked.
+
+    Instruction:
+    {{question}}
+
+    Response A (baseline):
+    {{baseline}}
+
+    Response B (candidate):
+    {{candidate}}
+  baselineFieldName: baseline
+  candidateFieldName: candidate
+  autorater:
+    model: gemini-3.5-flash-lite
+    samplingCount: 1
+    flipEnabled: false

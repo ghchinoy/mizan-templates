@@ -1,0 +1,29 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+metadata:
+  id: judge-eval/prebuilt-groundedness
+  name: Vertex Prebuilt Groundedness (HaluBench)
+  description: >
+    Vertex prebuilt groundedness (1 = grounded). The question is prepended to the context so short answers are judgeable.
+  version: 0.1.0
+  maintainers:
+    - mizan-judge-eval
+  license: Apache-2.0
+  tags: [judge-eval, groundedness, prebuilt]
+spec:
+  kind: prebuilt
+  modalities: [text]
+  inputs:
+    - name: context
+      modality: text
+      required: true
+    - name: answer
+      modality: text
+      required: true
+  native:
+    metric: groundedness
+    responseField: answer
+    contextField: context
+    passThreshold: 1
+  autorater:
+    model: gemini-3.5-flash-lite

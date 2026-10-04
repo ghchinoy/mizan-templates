@@ -1,0 +1,25 @@
+# Example inputs for longform-video/cross-shot-consistency (DOCUMENTATION ONLY).
+# This file is not imported or executed by Mizan; it shows the fields a caller
+# supplies at eval time. Multimodal assets must be gs:// URIs — the native Eval
+# Service does not accept inline bytes.
+#
+# Equivalent CLI invocation:
+#   mizan eval run --metric longform-video/cross-shot-consistency \
+#     --gcs shot_a=gs://example-bucket/story/shot-03-great-hall.mp4 \
+#     --gcs shot_b=gs://example-bucket/story/shot-09-return-to-hall.mp4 \
+#     --field continuity_spec="Protagonist 'Mara' wears a red wool coat and a brass locket; \
+# the great hall has a blue stained-glass window stage-left."
+
+metric: longform-video/cross-shot-consistency
+fields:
+  shot_a: gs://example-bucket/story/shot-03-great-hall.mp4       # reference shot
+  shot_b: gs://example-bucket/story/shot-09-return-to-hall.mp4   # non-consecutive return
+  continuity_spec: |
+    Protagonist "Mara" wears a red wool coat and a brass locket.
+    The great hall has a blue stained-glass window stage-left and a long oak table.
+    Only Mara's hair being slightly windswept is a permitted, narrative-driven change.
+
+# Illustrative expected shape (a score is 1-5 with an explanation):
+expected:
+  scoreRange: [1, 5]
+  explanation: "free-text rationale naming which entities held and which drifted"

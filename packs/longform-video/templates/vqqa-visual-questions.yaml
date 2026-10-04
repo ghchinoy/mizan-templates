@@ -1,0 +1,86 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+
+metadata:
+  id: longform-video/vqqa-visual-questions
+  name: VQQA Visual-Question Critique (semantic gradients)
+  description: >
+    Structured critique of a video against its generation prompt as a list of targeted
+    visual questions, each with an answer, a defect flag, a severity, and a concrete
+    suggested prompt fix. Inspired-by VQQA, which "dynamically generates visual
+    questions tailored to the specific prompt and uses the resulting VLM critiques as
+    semantic gradients" — natural-language directional feedback. The suggested_prompt_fix
+    field IS the semantic gradient a closed-loop agent consumes to refine the next
+    prompt. Routes to the structured-output path via responseSchema.
+  version: 0.1.0
+  authors:
+    - name: VAICS longform-video pack
+  maintainers: [longform-video-team]
+  license: Apache-2.0
+  tags: [video, custom-schema, vqqa, semantic-gradient, longform]
+
+spec:
+  kind: custom_schema
+  modalities: [video, text]
+  inputs:
+    - name: response
+      modality: video
+      required: true
+    - name: prompt
+      modality: text
+      required: true
+
+  metricPromptTemplate: |
+    You are the critic in a closed-loop video refinement system (VQQA). Given the
+    generation prompt and the resulting video, dynamically generate a set of visual
+    questions tailored to the prompt — one per prompt element or likely failure mode
+    (subject presence, attribute binding, count, action, setting, style, temporal
+    consistency, artifacts). Answer each from the video, mark whether it reveals a
+    defect, rate the defect severity, and give a concrete, actionable suggested change
+    to the TEXT PROMPT that would fix it (a semantic gradient). Do not describe pixel
+    edits — only prompt-level fixes.
+
+    Generation prompt:
+    {{prompt}}
+
+    Video under evaluation: {{response}}
+
+  responseSchema:
+    type: object
+    properties:
+      questions:
+        type: array
+        description: One entry per visual question probing the video against the prompt.
+        items:
+          type: object
+          properties:
+            question:
+              type: string
+              description: The visual question tailored to a prompt element or failure mode.
+            answer:
+              type: string
+              description: The answer observed from the video.
+            defect_detected:
+              type: boolean
+              description: true if the answer reveals a defect or departure from the prompt.
+            severity:
+              type: string
+              description: "Severity of the defect, one of: none, minor, major, critical."
+            suggested_prompt_fix:
+              type: string
+              description: Concrete prompt-level change (semantic gradient) to fix the defect; empty if none.
+          required:
+            - question
+            - answer
+            - defect_detected
+            - severity
+      overall_defect_count:
+        type: integer
+        description: Number of questions with defect_detected true.
+    required:
+      - questions
+      - overall_defect_count
+
+  autorater:
+    model: gemini-3.5-flash
+    samplingCount: 1

@@ -1,0 +1,66 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+
+metadata:
+  id: longform-video/factored-quality-scorecard
+  name: Factored Quality Scorecard (Co-Director-inspired)
+  description: >
+    Per-criterion rubric scorecard over a long-form video across four dimensions:
+    narrative progression, visual consistency, prompt adherence, and technical quality.
+    Inspired-by Co-Director, where "a multimodal LLM (MLLM) Judge critiques the compiled
+    cut across the three designated dimensions, feeding a factored reward signal back to
+    the MAB." This template produces that factored signal as an offline scorecard,
+    usable as a reward even without reproducing the bandit optimizer.
+  version: 0.1.0
+  authors:
+    - name: VAICS longform-video pack
+  maintainers: [longform-video-team]
+  license: Apache-2.0
+  tags: [video, rubric, factored-reward, co-director, longform]
+
+spec:
+  kind: rubric
+  modalities: [video, text]
+  inputs:
+    - name: response
+      modality: video
+      required: true
+    - name: brief
+      modality: text
+      required: true
+
+  metricPromptTemplate: |
+    Critique this long-form video against the creative brief, scoring each criterion in
+    the scorecard independently. Treat the four groups as a FACTORED reward signal: a
+    weak dimension must not be hidden by a strong one.
+
+    Creative brief:
+    {{brief}}
+
+    Video under evaluation: {{response}}
+
+  rubricGroups:
+    narrative_progression:
+      - The story advances meaningfully from start to finish
+      - There is no content collapse (stalled, looping, or repeated segments)
+      - Events follow a consistent causal and temporal order
+    visual_consistency:
+      - Character identity and costume stay consistent across shots
+      - Backgrounds, locations, and spatial geometry stay consistent
+      - Key props keep their state except where the story changes them
+    prompt_adherence:
+      - All subjects, attributes, and actions from the brief are present
+      - The setting, style, and mood match the brief
+      - No attribute binding errors (right attribute on the wrong subject)
+    technical_quality:
+      - Frames are free of obvious generation artifacts and warping
+      - Motion is smooth and free of flicker or temporal decay
+      - Transitions between segments are clean
+
+  systemInstruction: |
+    Score each criterion on its own evidence. Do not average across dimensions; a video
+    can have excellent technical quality and still fail narrative progression.
+
+  autorater:
+    model: gemini-3.5-flash
+    samplingCount: 4

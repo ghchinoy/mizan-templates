@@ -1,0 +1,74 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+
+metadata:
+  id: longform-video/cross-shot-consistency
+  name: Cross-Shot Visual Consistency (CANVAS-inspired)
+  description: >
+    Likert 1-5 score of whether character identity, costume/accessories, props, and
+    spatial geometry persist from one shot to another shot of the same long-form
+    narrative. Inspired-by CANVAS's "structured representations of characters,
+    locations, and object states" and its hard case: non-consecutive reappearance
+    after the camera leaves and returns.
+  version: 0.1.0
+  authors:
+    - name: VAICS longform-video pack
+  maintainers: [longform-video-team]
+  license: Apache-2.0
+  tags: [video, score, continuity, canvas, longform]
+
+spec:
+  kind: score
+  modalities: [video, text]
+  inputs:
+    - name: shot_a
+      modality: video
+      required: true
+    - name: shot_b
+      modality: video
+      required: true
+    - name: continuity_spec
+      modality: text
+      required: true
+
+  metricPromptTemplate: |
+    You are a continuity supervisor for a multi-shot video narrative. Rate how well
+    SHOT B preserves visual continuity with SHOT A, given the continuity contract
+    below. Score on a 1 to 5 integer scale:
+
+    5 = excellent: every contracted entity (character identity, face, costume,
+        accessories, props, and location geometry) is identical where it should be;
+        any change is clearly intentional and narrative-driven.
+    4 = good: minor drift on at most one non-critical attribute.
+    3 = fair: a noticeable unintended change to one contracted entity.
+    2 = poor: multiple contracted entities drift, or a central character/prop
+        changes unintentionally.
+    1 = incoherent: identity collapse — the character, costume, or location is no
+        longer recognizably the same.
+
+    Pay special attention to NON-CONSECUTIVE reappearance: if SHOT B is a return to a
+    character, prop, or location last seen in SHOT A after an interruption, check that
+    it reappears with the same attributes (minus any narrative-driven change the
+    contract permits). Unintended costume, accessory, or prop state changes across the
+    gap are the primary failure mode to penalize.
+
+    Continuity contract (entities/props/locations that must persist):
+    {{continuity_spec}}
+
+    Shot A (reference): {{shot_a}}
+    Shot B (under evaluation): {{shot_b}}
+
+    Give the integer score and explain which entities held and which drifted.
+
+  systemInstruction: |
+    Be strict. Judge continuity against the contract, not overall aesthetic quality.
+    A beautiful shot that breaks identity continuity still scores low.
+
+  rubricDetail:
+    scale:
+      min: 1
+      max: 5
+
+  autorater:
+    model: gemini-3.5-flash
+    samplingCount: 4

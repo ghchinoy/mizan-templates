@@ -1,0 +1,48 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+
+metadata:
+  id: longform-video/overall-coherence-score
+  name: Overall Long-Form Video Coherence Score 1-5
+  description: >
+    Likert 1-5 overall coherence of a long-form video — the collective quality of the
+    whole piece as a single coherent work, the video analogue of the shipped
+    judge-eval/summary-coherence-score template. A coherent video is well-structured
+    and builds shot to shot into one piece, not a heap of related but disconnected
+    clips. This is the general calibration anchor / scoring backbone for the pack.
+  version: 0.1.0
+  authors:
+    - name: VAICS longform-video pack
+  maintainers: [longform-video-team]
+  license: Apache-2.0
+  tags: [video, score, likert, coherence, longform]
+
+spec:
+  kind: score
+  modalities: [video]
+  inputs:
+    - name: response
+      modality: video
+      required: true
+
+  metricPromptTemplate: |
+    Rate the OVERALL COHERENCE of this long-form video on a 1 to 5 integer scale: the
+    collective quality of all shots. A coherent video is well-structured and organized,
+    builds from shot to shot into a single unified piece about one subject or story, and
+    is not a heap of related but disconnected clips. Consider visual continuity,
+    narrative flow, and consistency of style, pacing, and audio across the whole piece.
+
+    1 = incoherent   2 = poor   3 = fair   4 = good   5 = excellent
+
+    Video: {{response}}
+
+    Give the integer score and a brief justification.
+
+  rubricDetail:
+    scale:
+      min: 1
+      max: 5
+
+  autorater:
+    model: gemini-3.5-flash-lite
+    samplingCount: 4

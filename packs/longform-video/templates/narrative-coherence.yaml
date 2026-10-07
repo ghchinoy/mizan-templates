@@ -1,0 +1,73 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+
+metadata:
+  id: longform-video/narrative-coherence
+  name: Narrative / Temporal Coherence (A²RD-inspired)
+  description: >
+    Likert 1-5 score of whether a stitched, multi-segment long-form video tells a
+    continuous, non-contradictory story across its segments — the narrative advances
+    without content collapse, and temporal/causal order is consistent. Inspired-by
+    A²RD's segment-by-segment generation that must keep "character identity, costume
+    details, and structural geometry" coherent across a continuous multi-minute run,
+    switching between extrapolation (progress the story) and interpolation (anchor to
+    existing entities).
+  version: 0.1.0
+  authors:
+    - name: VAICS longform-video pack
+  maintainers: [longform-video-team]
+  license: Apache-2.0
+  tags: [video, score, coherence, temporal, a2rd, longform]
+
+spec:
+  kind: score
+  modalities: [video, text]
+  inputs:
+    - name: response
+      modality: video
+      required: true
+    - name: storyline
+      modality: text
+      required: true
+
+  metricPromptTemplate: |
+    You are evaluating the NARRATIVE and TEMPORAL coherence of a long-form video made
+    by chaining multiple generated segments. Watch the whole sequence and rate on a 1
+    to 5 integer scale whether it tells one continuous, non-contradictory story that
+    matches the intended storyline:
+
+    5 = excellent: the story progresses meaningfully segment to segment; events follow
+        a consistent causal/temporal order; no contradictions; entities and
+        environment evolve only as the story demands.
+    4 = good: coherent overall with one minor jump or soft transition.
+    3 = fair: the story mostly holds but has a visible discontinuity, repetition, or a
+        segment that stalls progress (mild content collapse).
+    2 = poor: contradictory events, broken temporal order, or the narrative fails to
+        advance across multiple segments.
+    1 = incoherent: segments do not form a single story; cascading failures or
+        unrelated clips stitched together.
+
+    Penalize BOTH failure directions named in the research: content collapse (the
+    narrative fails to progress, segments stall or loop) and uncontrolled drift
+    (entities/environment change in ways the storyline does not call for). Reward
+    smooth, intentional progression and anchored continuity across segment boundaries.
+
+    Intended storyline (scene-by-scene):
+    {{storyline}}
+
+    Video under evaluation (full stitched sequence): {{response}}
+
+    Give the integer score and explain where the narrative held and where it broke.
+
+  systemInstruction: |
+    Judge the story across the whole sequence, not any single segment in isolation.
+    Segment-boundary discontinuities and stalled progress are the primary failures.
+
+  rubricDetail:
+    scale:
+      min: 1
+      max: 5
+
+  autorater:
+    model: gemini-3.5-flash
+    samplingCount: 4

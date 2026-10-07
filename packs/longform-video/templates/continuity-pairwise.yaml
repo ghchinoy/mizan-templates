@@ -1,0 +1,61 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+
+metadata:
+  id: longform-video/continuity-pairwise
+  name: Continuity Pairwise Selection (CANVAS / VQQA-inspired)
+  description: >
+    Pairwise comparison of two candidate long-form renders: which better preserves
+    cross-shot continuity against a shared continuity contract. Inspired-by the blog's
+    own A/B framing (CANVAS vs direct generation) and doubles as VQQA's Global
+    Selection step — pick the best candidate across an optimization trajectory rather
+    than blindly taking the last iteration. flipEnabled mitigates position bias.
+  version: 0.1.0
+  authors:
+    - name: VAICS longform-video pack
+  maintainers: [longform-video-team]
+  license: Apache-2.0
+  tags: [video, pairwise, continuity, global-selection, canvas, vqqa, longform]
+
+spec:
+  kind: pairwise
+  modalities: [video, text]
+  inputs:
+    - name: baseline_render
+      modality: video
+      required: true
+    - name: candidate_render
+      modality: video
+      required: true
+    - name: continuity_spec
+      modality: text
+      required: true
+
+  metricPromptTemplate: |
+    Two candidate renders of the same long-form narrative are given. Decide which one
+    better preserves visual and narrative continuity against the continuity contract —
+    character identity, costume/props, location geometry, and non-contradictory story
+    progression. If they are genuinely equivalent, return a tie.
+
+    Base your decision on continuity fidelity to the contract, not on which render is
+    more aesthetically pleasing in isolation.
+
+    Continuity contract:
+    {{continuity_spec}}
+
+    Baseline render: {{baseline_render}}
+    Candidate render: {{candidate_render}}
+
+    State the winner and explain the deciding continuity differences.
+
+  candidateFieldName: candidate_render
+  baselineFieldName: baseline_render
+
+  systemInstruction: |
+    Judge continuity against the contract. Resist position and length bias; a longer or
+    flashier render is not automatically the more continuous one.
+
+  autorater:
+    model: gemini-3.5-flash
+    samplingCount: 4
+    flipEnabled: true

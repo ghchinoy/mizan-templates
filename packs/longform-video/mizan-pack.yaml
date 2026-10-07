@@ -1,0 +1,19 @@
+apiVersion: mizan.dev/v1alpha1
+kind: Pack
+metadata:
+  name: longform-video            # namespace — must match this directory name
+  version: 0.1.0                  # pack-level semver (human release tag)
+  description: >
+    Gemini LLM-as-a-Judge templates for evaluating coherent long-form / multi-shot
+    genmedia video. Inspired-by (not a faithful reproduction of) the four frameworks in
+    Google Research's "Automating coherent long-form video generation" — Co-Director,
+    CANVAS, A²RD, and VQQA — which all place an MLLM/VLM judge at their core. These
+    templates realize that judge role: cross-shot visual consistency, narrative/temporal
+    coherence, prompt adherence, an overall coherence Likert, a factored quality
+    scorecard, continuity pairwise selection, and structured VQQA visual-question
+    critiques.
+  maintainers: [longform-video-team]
+  license: Apache-2.0
+spec:
+  # minimum Mizan format version required to consume this pack:
+  requiresApiVersion: mizan.dev/v1alpha1

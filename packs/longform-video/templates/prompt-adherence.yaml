@@ -1,0 +1,59 @@
+apiVersion: mizan.dev/v1alpha1
+kind: MetricTemplate
+
+metadata:
+  id: longform-video/prompt-adherence
+  name: Prompt Adherence vs Original Prompt (VQQA-inspired)
+  description: >
+    Pointwise score + explanation of how faithfully a generated video satisfies the
+    original, UNEDITED generation prompt. Inspired-by VQQA's "global VLM rater [that]
+    evaluates every video generated across the optimization trajectory against the
+    original, unedited prompt" and selects the highest-scoring candidate — the
+    anti-drift safeguard of its closed-loop prompt optimizer. Use this as the global
+    objective when choosing among candidates from a refinement loop.
+  version: 0.1.0
+  authors:
+    - name: VAICS longform-video pack
+  maintainers: [longform-video-team]
+  license: Apache-2.0
+  tags: [video, pointwise, prompt-adherence, vqqa, longform]
+
+spec:
+  kind: pointwise
+  modalities: [video, text]
+  inputs:
+    - name: response
+      modality: video
+      required: true
+    - name: original_prompt
+      modality: text
+      required: true
+
+  metricPromptTemplate: |
+    You are a global video rater. Judge how faithfully the video satisfies the
+    ORIGINAL, UNEDITED prompt below — not any refined or intermediate prompt. Rate on a
+    1 to 5 scale (1 = ignores the prompt, 5 = fully realizes every element of the
+    prompt) and explain.
+
+    Check, element by element: are all named subjects present? Are their attributes
+    (count, color, material, clothing, relationships) correct? Are the requested
+    actions, setting, camera/style, and mood all realized? Explicitly flag attribute
+    binding errors (the right attribute bound to the wrong subject) and any element of
+    the prompt that is missing or contradicted.
+
+    Score against the prompt as written, so that a locally "improved" video that has
+    drifted away from the original intent is penalized relative to one that stays true
+    to it.
+
+    Original, unedited prompt:
+    {{original_prompt}}
+
+    Video under evaluation: {{response}}
+
+  systemInstruction: |
+    Anchor strictly to the original prompt. Do not reward production polish that comes
+    at the cost of departing from what the prompt actually asked for.
+
+  autorater:
+    model: gemini-3.5-flash
+    samplingCount: 4

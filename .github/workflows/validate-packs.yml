@@ -21,9 +21,15 @@
 name: validate-packs
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "packs/**"
+      - ".github/workflows/validate-packs.yml"
   pull_request:
     paths:
       - "packs/**"
+      - ".github/workflows/validate-packs.yml"
   workflow_dispatch: {}
 
 permissions:

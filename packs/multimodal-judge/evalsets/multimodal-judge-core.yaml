@@ -22,7 +22,7 @@ spec:
       weight: 1.5
   aggregation:
     method: weighted-mean
-    threshold: 0.85
+    threshold: 2.2
     gate: true
   display:
     order: as-listed

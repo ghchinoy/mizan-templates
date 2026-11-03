@@ -27,6 +27,9 @@
 - **`boul` Polarity Convention**:
   - For condition detectors (toxicity, prompt injection, drift), define `passed: true` to mean *"the proposition holds / condition is detected"*.
   - For compliance checks, state `PASS (true)` and `FAIL (false)` conditions explicitly in `metricPromptTemplate`.
+- **`EvalSet` CLI & Cross-Kind Gate Calibration**:
+  - Execute `EvalSet` suites via `mizan eval run --set packs/<pack-name>/evalsets/<slug>.yaml` (there is no `mizan evalset` subcommand).
+  - Phase-1 `mean` / `weighted-mean` aggregates raw numeric `Score` values without cross-kind normalization (`rubric`/`score` on `1..5`, `boul` mapping `PASS`/`FAIL` to `1.0`/`0.0`, while `choice` and `pairwise` have `Score == nil` and render as non-scalar verdict rows). When mixing `1..5` rubrics with `0/1` `boul` safety checks under `gate: true`, calibrate `aggregation.threshold` high enough (e.g., `2.2` in `packs/multimodal-judge/evalsets/multimodal-judge-core.yaml`) so a `boul` failure (`0.0`) always trips the gate.
 
 ## Validation & Local Sync
 
@@ -35,7 +38,7 @@
   # Using a local ../mizan checkout (preferred when developing alongside mizan):
   ../mizan/bin/mizan pack validate .
 
-  # Or using an installed mizan CLI (v0.3.0+):
+  # Or using an installed mizan CLI (v0.4.0+):
   mizan pack validate .
   ```
   Ensure `0 error(s), 0 warning(s)`.
@@ -44,5 +47,5 @@
   mizan registry import ./packs/<pack-name> --strategy overwrite
   ```
   *(Note: the subcommand is `mizan registry import`, not `mizan pack import`.)*
-- **CI Validator Pin**: `.github/workflows/validate-packs.yml` installs a tagged `ghchinoy/mizan` release via `MIZAN_VERSION`. Bump `MIZAN_VERSION` deliberately only after a new `ghchinoy/mizan` tag is published.
+- **CI Validator Pin & Fork Safety**: `.github/workflows/validate-packs.yml` installs a tagged `ghchinoy/mizan` release via `MIZAN_VERSION`. Bump `MIZAN_VERSION` deliberately only after a new `ghchinoy/mizan` tag is published, and keep `MIZAN_RO_TOKEN` optional (never `exit 1` when empty) so external fork `pull_request` runs (where GitHub withholds `secrets.*`) pass anonymously against public `ghchinoy/mizan`.
 - **Secrets Hygiene**: Never commit `.env`, `.env.*`, or credentials.

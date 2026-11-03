@@ -29,7 +29,9 @@ mizan-templates/
       mizan-pack.yaml            # pack manifest; metadata.name is the namespace
       templates/
         <slug>.yaml              # one MetricTemplate per file
-      examples/                  # OPTIONAL: sample inputs / gs:// refs (docs only)
+      evalsets/                  # OPTIONAL: shareable EvalSet suites (mizan eval run --set)
+        <slug>.yaml
+      examples/                  # OPTIONAL: sample inputs / compare-engines --dataset .jsonl
       rubrics/                   # OPTIONAL: shared rubric groups (P2+)
       README.md                  # pack description
   .github/workflows/validate-packs.yml   # PR gate, path-filtered to packs/**
@@ -39,7 +41,7 @@ mizan-templates/
 - Every template's `metadata.id` is namespaced `"<pack-name>/<slug>"`, so two packs
   can each define e.g. a `helpfulness` metric without colliding on import.
 
-Canonical packs include [`packs/quickstart/`](packs/quickstart/), [`packs/audio/`](packs/audio/), [`packs/google-brand/`](packs/google-brand/), and [`packs/calibration/`](packs/calibration/).
+Canonical packs include [`packs/quickstart/`](packs/quickstart/), [`packs/audio/`](packs/audio/), [`packs/google-brand/`](packs/google-brand/), [`packs/longform-video/`](packs/longform-video/), [`packs/multimodal-judge/`](packs/multimodal-judge/), [`packs/calibration/`](packs/calibration/), and [`packs/judge-eval/`](packs/judge-eval/).
 
 Where the other packs judge *your* output, [`packs/calibration/`](packs/calibration/)
 judges *the judge*: its `boul` / `choice` / `score` templates are written so their
@@ -53,7 +55,7 @@ so you can measure judge-human agreement before trusting a judge in a gate.
 Get the CLI first:
 
 ```bash
-go install github.com/ghchinoy/mizan/cmd/mizan@v0.3.0
+go install github.com/ghchinoy/mizan/cmd/mizan@v0.4.0
 ```
 
 See [Mizan's Quickstart](https://github.com/ghchinoy/mizan#quickstart) for prerequisites (Go 1.26+, a GCP project with Vertex AI enabled, and application-default credentials).
@@ -120,7 +122,7 @@ all creds-free, no eval API calls) — so README- and docs-only PRs are unaffect
 
 Because this repo has no Go source of its own, the workflow **obtains a
 version-pinned `mizan` validator** via `go install` rather than building one. The
-version is pinned in the workflow file (`MIZAN_VERSION`, currently `v0.3.0`);
+version is pinned in the workflow file (`MIZAN_VERSION`, currently `v0.4.0`);
 maintainers bump the pin when Mizan cuts a newer tag.
 
 For the design rationale and the alternatives considered, see `ghchinoy/mizan` →

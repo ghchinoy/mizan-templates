@@ -20,7 +20,8 @@ A **pack** is a directory under `packs/`:
 packs/<pack-name>/
   mizan-pack.yaml        # REQUIRED — pack manifest
   templates/*.yaml       # REQUIRED — one MetricTemplate per file
-  examples/*.yaml        # OPTIONAL — sample inputs / gs:// refs (documentation only)
+  evalsets/*.yaml        # OPTIONAL — shareable EvalSet suites (mizan eval run --set <path>)
+  examples/*             # OPTIONAL — sample .yaml inputs or compare-engines --dataset .jsonl cases
   rubrics/*.yaml         # OPTIONAL — shared rubric groups (P2+; not required)
   README.md              # OPTIONAL — human description of the pack
 ```
@@ -117,6 +118,38 @@ spec:
 | `rubric`        | `rubricGroups: { <group>: [ "<criterion>", ... ] }` (non-empty) |
 | `custom_schema` | `responseSchema: { ...JSON Schema... }` (routes to the genai fallback) |
 | `heuristic`     | `heuristic: { type, target, ... }` (deterministic non-LLM check) |
+| `computation`   | `native: { metric: ... }` (local deterministic BLEU/ROUGE/exact_match/tool/trajectory metrics) |
+| `prebuilt`      | `native: { metric: ... }` (Vertex AI predefined metrics using service-managed judge) |
+
+---
+
+## 2b. EvalSet file (`kind: EvalSet`)
+
+Optional suite manifests live under `evalsets/<slug>.yaml` and are executed via `mizan eval run --set packs/<pack-name>/evalsets/<slug>.yaml`:
+
+```yaml
+apiVersion: mizan.dev/v1alpha1
+kind: EvalSet
+metadata:
+  id: multimodal-judge/multimodal-judge-core   # "<pack-name>/<slug>"
+  name: Multimodal Judge Core Evaluation Suite
+  version: 0.1.0
+  assetClass: multimodal-response
+spec:
+  members:
+    - metric: multimodal-judge/fine-print-verify
+      weight: 1.0
+    - metric: multimodal-judge/untrusted-ocr-quarantine
+      weight: 1.5
+  aggregation:
+    method: weighted-mean                      # mean | weighted-mean | min
+    threshold: 2.2                             # raw numeric cutoff over scored members
+    gate: true                                 # non-zero exit code when verdict is FAILED
+  display:
+    order: as-listed
+```
+
+> **Cross-kind threshold calibration:** Phase-1 `mean` / `weighted-mean` aggregates raw numeric `Score` values without cross-kind normalization (`rubric` / `score` on `1..5`, `boul` mapping `PASS`/`FAIL` to `1.0`/`0.0`, while `choice` and `pairwise` have `Score == nil` and render as non-scalar verdict rows). Calibrate `threshold` so critical `boul` safety gates (`0.0` on failure) cannot be masked by `1..5` rubric members.
 
 ---
 

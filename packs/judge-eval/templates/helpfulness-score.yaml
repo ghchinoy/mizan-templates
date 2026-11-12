@@ -39,4 +39,4 @@ spec:
       min: 0
       max: 4
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

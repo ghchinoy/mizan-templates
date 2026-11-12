@@ -124,4 +124,4 @@ spec:
     When the customer reports something that has not happened yet versus something that
     failed versus something that is merely pending, those are different intents.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

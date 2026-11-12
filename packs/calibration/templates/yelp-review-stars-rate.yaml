@@ -44,4 +44,4 @@ spec:
     polarised: 1 and 5 are far more common than 3. A politely worded complaint is often a
     2, and faint praise with a real complaint is often a 3.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

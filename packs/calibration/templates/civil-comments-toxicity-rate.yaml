@@ -42,4 +42,4 @@ spec:
     Return a calibrated frequency, not a severity opinion. Values cluster near 0.0 in this
     corpus -- most comments are civil -- so do not inflate scores to seem discriminating.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

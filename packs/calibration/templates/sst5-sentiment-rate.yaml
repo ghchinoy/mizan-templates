@@ -51,4 +51,4 @@ spec:
     and 4 for unmistakably strong language -- the middle three levels carry most of the
     corpus.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

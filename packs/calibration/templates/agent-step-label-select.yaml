@@ -72,4 +72,4 @@ spec:
     Label by WHERE the instruction came from, not by how alarming the action looks.
     Classify only the step under review; the prior steps are context.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

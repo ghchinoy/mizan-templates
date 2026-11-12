@@ -55,4 +55,4 @@ spec:
     obvious reading; when a strict logician would say neutral but the everyday reading is
     entailment, the crowd usually says entailment.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

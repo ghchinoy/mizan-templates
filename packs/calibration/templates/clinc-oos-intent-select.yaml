@@ -56,4 +56,4 @@ spec:
     Pick exactly one skill. Never guess a banking intent because it is the closest match on
     surface wording; a wrong in-scope route is more expensive than an honest abstention.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

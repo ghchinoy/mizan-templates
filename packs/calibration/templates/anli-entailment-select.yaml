@@ -53,4 +53,4 @@ spec:
     says. Re-read the premise for that detail before deciding. Use only the premise; ignore
     outside world knowledge.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

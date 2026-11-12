@@ -71,4 +71,4 @@ spec:
     anyone the comment describes. The comments are short, informal, and stripped of thread
     context; judge only what is on the page.
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen

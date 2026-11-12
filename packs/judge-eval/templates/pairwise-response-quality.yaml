@@ -39,6 +39,6 @@ spec:
   baselineFieldName: baseline
   candidateFieldName: candidate
   autorater:
-    model: gemini-3.5-flash-lite
+    model: gemini-4-hydrogen
     samplingCount: 1
     flipEnabled: false

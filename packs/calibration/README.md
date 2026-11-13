@@ -189,44 +189,26 @@ clean boolean control for confidence calibration.
 
 ## Model rightsizing & empirical benchmark results
 
-All 15 templates in this pack default to **`gemini-3.5-flash-lite`**
-(`spec.autorater.model`).
+Templates in this pack use an evidence-based two-tier Flash configuration
+(`spec.autorater.model`) validated in Mizan Experiment 08
+(`docs/experiments/08-gemini-4-hydrogen-spike.md`):
+- **6 binary `boul` templates** default to **`gemini-3.5-flash-lite`** (`16 / 16 = 100%` accuracy at `~905–1,080 ms` p50, `0` thinking tokens).
+- **6 multi-class `choice` and 3 continuous `score` templates** default to **`gemini-4-hydrogen`** (`43 / 46 = 93.5%` suite accuracy, Spearman $\rho = 0.990$, MAE $= 0.11$, outperforming `gemini-3.8-flash` in both accuracy and latency).
 
-Before freezing this decision, we evaluated all 46 benchmark cases across the
-entire 15-template suite against real human ground truth across three models
-on Vertex AI:
+Across all 46 benchmark cases in `calibration_suite.jsonl` (15 templates) scored against human ground truth in the same session (Experiment 08):
 
-| Model | Overall Accuracy (46) | boul (16) | choice (20) | score MAE (10) | Avg Latency | Role |
+| Model | Overall Accuracy (46) | boul (16) | choice (20) | score Spearman $\rho$ / MAE (10) | Serial p50 Latency | Role |
 |---|---|---|---|---|---|---|
-| `gemini-2.5-flash` | 37 / 46 (80.4%) | 15 / 16 (93.8%) | 16 / 20 (80.0%) | 0.260 | 2,423 ms | Previous generation baseline |
-| **`gemini-3.5-flash-lite`** | **38 / 46 (82.6%)** | **15 / 16 (93.8%)** | **17 / 20 (85.0%)** | **0.210** | **905 ms** | **Pack default (fast, cheap)** |
-| `gemini-3.8-flash` | 40 / 46 (87.0%) | 16 / 16 (100.0%) | 18 / 20 (90.0%) | 0.210 | 3,362 ms | High-capability reasoning override |
+| **`gemini-3.5-flash-lite`** | **42 / 46 (91.3%)** | **16 / 16 (100.0%)** | 18 / 20 (90.0%) | 0.979 / 0.140 | **~1,080 ms** | **Default for binary `boul` checks (fast, 0 thinking tokens)** |
+| `gemini-3.8-flash` | 42 / 46 (91.3%) | 16 / 16 (100.0%) | 17 / 20 (85.0%) | 0.985 / 0.140 | ~3,038 ms | Previous reasoning Flash baseline |
+| **`gemini-4-hydrogen` (`DEFAULT` / `LOW`)** | **43 / 46 (93.5%)** | **16 / 16 (100.0%)** | **18 / 20 (90.0%)** | **0.990 / 0.110** | **~1,921–2,282 ms** | **Default for multi-class `choice` & continuous `score`** |
+| `gemini-4-argon` (Pro) | 42 / 46 (91.3%) | 15 / 16 (93.8%) | 18 / 20 (90.0%) | 0.976 / 0.120 | ~4,933 ms | Pro-tier ceiling anchor |
+| `gemini-4-carbon` (Pro) | 43 / 46 (93.5%) | 16 / 16 (100.0%) | 18 / 20 (90.0%) | 0.990 / 0.090 | ~5,942 ms | Pro-tier ceiling anchor |
 
-### Why `gemini-3.5-flash-lite` is the right default
-1. **Sub-second evaluation throughput**: At **905 ms average latency**, it is
-   **2.7× faster** than `gemini-2.5-flash` and **3.7× faster** than `gemini-3.8-flash`.
-   Sub-second responses make high-volume CI/CD gating and multi-thousand row
-   benchmarking practical.
-2. **Superior calibration over 2.5-flash**: It scored higher overall accuracy
-   (82.6% vs 80.4%) and lower Mean Absolute Error on soft toxicity (0.210 vs 0.260).
-3. **Flawless large-enum routing**: In `banking77-intent-select`, `gemini-3.5-flash-lite`
-   achieved **100% accuracy** routing across all 77 fine-grained choices in ~750 ms.
-4. **Adversarial injection detection**: 100% recall on prompt injection attacks
-   (including German adversarial overrides) and agent trajectory hijack detection.
-
-### When to override with `--model gemini-3.8-flash`
-`gemini-3.8-flash` took the lead on two specific boundary cases requiring subtle
-deductive reasoning:
-- **Harsh criticism vs. abuse (`tox-03`)**: Only `gemini-3.8-flash` correctly
-  recognized that *"This is the single laziest piece of reporting I read all year"*
-  is harsh journalistic critique rather than personal abuse (`passed: false`). Both
-  2.5 and 3.5-lite flagged it as toxic (`passed: true`).
-- **Temporal NLI ambiguity (`anli-03`)**: Only `gemini-3.8-flash` avoided the
-  assumption trap in *"Mira joined the lab in 2015 and became second director four
-  years later... Was the lab founded before 2015?"* and returned `neutral`.
-
-For deep adversarial NLI or complex multi-step reasoning, pass `--model gemini-3.8-flash`
-at eval time.
+### Why this two-tier split (`gemini-3.5-flash-lite` + `gemini-4-hydrogen`) is optimal
+1. **Sub-second `boul` throughput with `gemini-3.5-flash-lite`**: On the 6 binary `boul` templates (16 cases including adversarial German prompt injections and agent trajectory drift), `gemini-3.5-flash-lite` achieves **16/16 (100%)** at **~1,080 ms p50** and **15.85 items/s** ($c=16$) with zero thinking token overhead.
+2. **Pro-tier calibration accuracy on `choice` and `score` with `gemini-4-hydrogen`**: On the 6 multi-class `choice` templates (including 77-way `banking77-intent-select`, 28-way `go-emotions`, 11-way `clinc-oos`, and adversarial `anli`/`chaos-nli`) and 3 continuous `score` templates, `gemini-4-hydrogen` reaches **93.5% (43/46)** overall and **Spearman $\rho = 0.990$ / MAE $= 0.110$**, tying `gemini-4-carbon` (Pro) at less than half the latency and beating `gemini-3.8-flash` (`91.3%`, MAE `0.140`).
+3. **Pareto-optimal `--thinking-level low`**: Passing `--thinking-level low` on `gemini-4-hydrogen` preserves **43/46 (93.5%)** accuracy while cutting thinking tokens by **54%** (`325` $\to$ `151` tokens) and reducing p50 / p95 latency from `2,569 / 6,216 ms` to **`1,921 / 2,906 ms`**.
 
 ---
 

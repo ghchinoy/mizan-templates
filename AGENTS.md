@@ -21,8 +21,10 @@
 - **Format & Placeholders (`apiVersion: mizan.dev/v1alpha1`)**:
   - Author prompt placeholders with double braces (`{{field_name}}`). Every `{{field_name}}` in `metricPromptTemplate` and `systemInstruction` must match `spec.inputs`, and every input `modality` must appear in `spec.modalities`.
   - Keep `spec.autorater.model` publisher-relative (never embed `projects/<proj>/locations/<loc>/...`).
-- **Durable Model Pins**:
-  - Pin `spec.autorater.model` to `gemini-3.5-flash-lite` (default for `boul`, `choice`, and `score`) or `gemini-3.5-flash` (multimodal/pointwise/pairwise/rubric), unless benchmarks justify `gemini-3.8-flash`.
+- **Durable & Tiered Model Pins**:
+  - **`gemini-3.5-flash-lite`** (fast/high-throughput default, `~800–1,080 ms` p50, `0` thinking tokens): Pin for single-proposition `boul` checks (faithfulness, response safety, prompt injection, drift) and low-cardinality `choice` triage (`quickstart/support-intent-choice`).
+  - **`gemini-4-hydrogen`** (reasoning/pairwise Flash tier, superseding `gemini-3.8-flash`): Pin for text `pairwise` preference, instruction-following, subtle prompt toxicity (`judge-eval/prompt-toxicity-check`), Likert `score`, text `rubric` / `custom_schema`, and multi-class `choice` / NLI taxonomies (`banking77`, `clinc`, `go-emotions`, `anli`, `chaos-nli`, `agent-step-label-select`).
+  - **`gemini-3.5-flash`** (multimodal default): Pin for multimodal (`image`, `audio`, `video`, `music`) templates.
   - **Never** pin retired `gemini-2.x` models (`gemini-2.5-flash`, `gemini-2.5-pro`).
 - **`boul` Polarity Convention**:
   - For condition detectors (toxicity, prompt injection, drift), define `passed: true` to mean *"the proposition holds / condition is detected"*.
